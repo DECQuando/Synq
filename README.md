@@ -1,6 +1,17 @@
 # このコードについて
 
 # 使い方
+## requirements.txt
+### 生成方法
+```bash
+pip freeze > requirements.txt
+```
+
+### インストール方法
+```bash
+pip install -r requirements.txt
+```
+
 ## `SECRET_KEY`の生成方法
 
 ターミナルで以下を実行。
