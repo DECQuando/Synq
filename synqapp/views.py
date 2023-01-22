@@ -14,7 +14,10 @@ class WelcomeView(View):
 
 class AlbumView(View):
     def get(self, request, *args, **kwargs):
-        return render(request, "synqapp/album.html")
+        # 回数分写真を繰り返し表示する
+        pics_num = [i for i in range(10)]
+        context = {'pics_num': pics_num,}
+        return render(request, "synqapp/album.html", context)
 
 
 class UploadView(View):
