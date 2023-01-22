@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block contents %}
+
+  <section class="py-5 text-center container">
+    <div class="row py-lg-5">
+      <div class="col-lg-6 col-md-8 mx-auto">
+        <h1 class="fw-light">Album App</h1>
+        <p class="lead text-body-secondary">
+            Welcome to Album App!
+        </p>
+        <p>
+          <a href="{% url 'synqapp:upload' %}" class="btn btn-primary my-2">Upload</a>
+          <a href="{% url 'synqapp:album' %}" class="btn btn-secondary my-2">Album</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}
