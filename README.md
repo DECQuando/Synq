@@ -46,3 +46,30 @@ cat local_settings.py
 
 
 
+## Dockerを用いたビルド
+### Prerequisite
+- Docker
+
+### ビルド方法
+事前にDockerを立ち上げておく。
+以下 $BASE_DIRはベースディレクトリのPATHを表す(例: ~/Synq/)。
+```bash
+cd $BASE_DIR
+
+# ビルド(初回のみ)
+docker build -t synq:1.0 $BASE_DIR
+
+# 立ち上げ
+docker run -it --rm -p 8000:8000 -v $BASE_DIR:/root/Synq \
+  --name Synq synq:1.0 /bin/bash
+# dockerコンテナの中で#rootとしてターミナルが立ち上がる
+# そのターミナル内で以下を実行
+python3 manage.py migrate
+python3 manage.py runserver 0.0.0.0:800
+# Ctrl+Cでサーバーを停止、Ctrl+Dでターミナルを抜けられる。
+```
+
+### 参考
+- [Django Documentation Settings ALLOWED_HOST](https://docs.djangoproject.com/en/2.2/ref/settings/#allowed-hosts)
+- [Docker(Docker-Compose)】Python,Djangoの開発・本番環境構築【Postgres,Gunicorn,Nginx利用】](https://tomato-develop.com/docker-dockercompose-python-django-postgresql-gunicorn-nginx-how-to-build-development-and-production-environment/)
+- [現場で使える Django の教科書《基礎編》](https://amzn.asia/d/g1zXfkl)
