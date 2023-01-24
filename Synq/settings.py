@@ -29,7 +29,8 @@ except ImportError:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Docker導入時に設定。指定なし[]だとアクセスできない。
+ALLOWED_HOSTS = ['0.0.0.0']
 
 
 # Application definition
