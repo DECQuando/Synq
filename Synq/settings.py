@@ -126,4 +126,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # media files
 MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+if DEBUG:
+    MEDIA_ROOT = BASE_DIR / 'media'
+else:
+    # deploy後の本番環境ではこちら
+    MEDIA_ROOT = f'/var/www/{BASE_DIR.name}/media'
