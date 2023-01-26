@@ -9,6 +9,7 @@ class Image(models.Model):
     """
     created_at = models.DateTimeField(default=timezone.now, verbose_name='作成日')
     name = models.CharField(max_length=100, verbose_name="名前")
+    image = models.ImageField(null=True, blank=True)
 
 
     def __str__(self):
