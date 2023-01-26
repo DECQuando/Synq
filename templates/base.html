@@ -33,6 +33,8 @@
             <li><a href="{% url 'synqapp:welcome' %}" class="text-white">Main Page</a></li>
             <li><a href="{% url 'synqapp:upload' %}" class="text-white">Upload</a></li>
             <li><a href="{% url 'synqapp:album' %}" class="text-white">Album</a></li>
+            <li><a href="{% url 'synqapp:image_post' %}" class="text-white">Image Post</a></li>
+            <li><a href="{% url 'synqapp:image_list' %}" class="text-white">Album List</a></li>
           </ul>
         </div>
       </div>
@@ -52,7 +54,10 @@
 </header>
 
 <main>
-    {# ここに、album.html, upload.html, welcome.htmlを挿入する #}
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-1 mb-0 border-bottom">
+      <h5 class="h5">{% block theme %}{% endblock %}</h5>
+    </div>
+    {# ここに、album.html, upload.html, welcome.htmlを挿入するという意味 #}
     {% block contents %}{% endblock %}
 
 </main>

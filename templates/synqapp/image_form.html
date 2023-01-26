@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block theme %}
+投稿画面
+{% endblock %}
+
+{% block contents %}
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">送信</button>
+    </form>
+{% endblock %}

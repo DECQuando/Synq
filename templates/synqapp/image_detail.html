@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block theme %}
+投稿詳細
+{% endblock %}
+
+{% block contents %}
+    <article>
+        <h4>{{ image.created_at|date:"Y年n月j日 H:i:s" }}</h4>
+        <p>投稿者: {{ image.name }}</p>
+    </article>
+{% endblock %}

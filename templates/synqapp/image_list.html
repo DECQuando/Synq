@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block theme %}
+投稿一覧
+{% endblock %}
+
+{% block contents %}
+    {% for img in image_list %}
+    <article>
+        <h4>
+            {# pkはprimary keyの略 #}
+            <a href="{% url 'synqapp:image_detail' img.pk %}">
+            日時：{{ img.created_at|date:"Y年n月j日 H:i:s" }}
+            </a>
+        </h4>
+        <h6>作成者: {{ img.name }}</h6>
+        <hr>
+    </article>
+    {% endfor %}
+{% endblock %}
