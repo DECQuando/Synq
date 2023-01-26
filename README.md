@@ -12,6 +12,19 @@ pip freeze > requirements.txt
 pip install -r requirements.txt
 ```
 
+
+## migrate
+### migrationファイルの作成
+```bash
+python manage.py makemigrations
+```
+
+### マイグレーション
+```bash
+python manage.py migrate
+```
+
+
 ## `SECRET_KEY`の生成方法
 
 ターミナルで以下を実行。
