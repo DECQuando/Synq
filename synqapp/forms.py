@@ -6,5 +6,5 @@ class ImageForm(forms.ModelForm):
     class Meta:
         model = Image
         # ユーザーに入力を許可するフィールドをfieldsで指定する
-        fields = ("name",)
+        fields = ("name", "image")
 
