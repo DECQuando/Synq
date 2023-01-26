@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "synqapp.apps.SynqappConfig",
-    "django_bootstrap5",
 ]
 
 MIDDLEWARE = [
