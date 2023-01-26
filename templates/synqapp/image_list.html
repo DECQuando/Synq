@@ -14,6 +14,9 @@
             </a>
         </h4>
         <h6>作成者: {{ img.name }}</h6>
+        {% if img.image %}
+            <img src="{{ img.image.url }}" alt="{{ img.name }}の写真">
+        {% endif %}
         <hr>
     </article>
     {% endfor %}
