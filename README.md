@@ -1,6 +1,13 @@
 # このコードについて
 
 # 使い方
+
+## コードのフォーマット
+Pycharmでコードのフォーマットをするには、
+```bash
+command + option + L
+```
+
 ## requirements.txt
 ### 生成方法
 ```bash
