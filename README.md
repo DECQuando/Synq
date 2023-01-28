@@ -7,6 +7,8 @@ Pycharmでコードのフォーマットをするには、
 ```bash
 command + option + L
 ```
+- 参考: 
+[【PyCharm】ファイル保存時に自動フォーマット（整形）](https://sleepless-se.net/2021/12/04/pycharm-auto-format/)
 
 ## requirements.txt
 ### 生成方法
