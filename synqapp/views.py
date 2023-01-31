@@ -32,6 +32,7 @@ class CSRFExemptMixin(object):
 class ImagePost(CSRFExemptMixin, generic.CreateView):
     model = Image
     form_class = ImageForm
+    template_name = "synqapp/image_form.html"
     # success_urlはフォームが作成された後のリダイレクト先。
     # reverse_lazyの引数はsynqapp/urls.pyに定義したurlのname属性。
     # そのnameをurlに変換するのがreverse_lazy。
@@ -41,7 +42,11 @@ class ImagePost(CSRFExemptMixin, generic.CreateView):
 class ImageList(generic.ListView):
     model = Image
     ordering = "-created_at"
+    template_name = "synqapp/image_list.html"
+    context_object_name = "image_context_list"
 
 
 class ImageDetail(generic.DetailView):
     model = Image
+    template_name = "synqapp/image_detail.html"
+    context_object_name = "image_context"
