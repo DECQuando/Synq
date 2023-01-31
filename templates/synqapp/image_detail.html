@@ -11,8 +11,8 @@
                 <div class="col">
                     <div class="card-group">
                         <div class="card shadow-sm">
-                            {% if image.image %}
-                                <img src="{{ image.image.url }}" alt="{{ image.name }}の写真">
+                            {% if image_context.image %}
+                                <img src="{{ image_context.image.url }}" alt="{{ image_context.name }}の写真">
                             {% else %}
                                 <svg class="bd-placeholder-img card-img-top" width="100%" height="225"
                                      xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"
@@ -24,8 +24,8 @@
                                 {#                  <img src="/media/sample.jpg" alt="sample画像">#}
                             {% endif %}
                             <div class="card-body">
-                                <p class="card-text">{{ image.name }}</p>
-                                <p>{{ image.created_at|date:"Y年n月j日 H:i:s" }}</p>
+                                <p class="card-text">{{ image_context.name }}</p>
+                                <p>{{ image_context.created_at|date:"Y年n月j日 H:i:s" }}</p>
                             </div>
                         </div>
                     </div>
