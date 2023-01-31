@@ -64,7 +64,9 @@
     </div>
     {# ここに、他のhtmlを挿入 #}
     {% block contents %}{% endblock %}
-
+    <div class="text-center">
+        <a href="{{request.META.HTTP_REFERER}}" class="btn btn-primary my-2">戻る</a>
+    </div>
 </main>
 
 {#<footer class="text-body-secondary py-5">#}
