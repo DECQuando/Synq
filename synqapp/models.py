@@ -16,7 +16,9 @@ class Image(models.Model):
                               verbose_name="添付ファイル",
                               validators=[FileExtensionValidator(["jpg", "png"])],
                               )
+    # TODO: 一つ前の画像と比較して、類似度を算出し、group番号を付与する
+    group = models.IntegerField(null=True, blank=True, verbose_name="グループID")
 
     def __str__(self):
         """管理者画面での表示形式を定義"""
-        return "作成日: {} 作成者: {}".format(self.created_at, self.name)
+        return "作成日: {} 作成者: {}　グループID: {}".format(self.created_at, self.name, self.group)
