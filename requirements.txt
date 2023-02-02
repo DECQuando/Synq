@@ -1,6 +1,9 @@
 asgiref==3.6.0
 Django==4.1.5
+imgsim==0.1.2
 numpy==1.24.1
 opencv-python==4.7.0.68
 Pillow==9.4.0
 sqlparse==0.4.3
+torch==1.13.1
+typing_extensions==4.4.0

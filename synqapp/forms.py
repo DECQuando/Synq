@@ -1,5 +1,6 @@
 from django import forms
 from .models import Image
+import cv2
 
 
 class ImageForm(forms.ModelForm):
