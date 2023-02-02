@@ -11,6 +11,7 @@ class ImageForm(forms.ModelForm):
         # formの初期値を設定
     def __init__(self, *args, **kwargs):
         super(ImageForm, self).__init__(*args, **kwargs)
+        # TODO: 画像の類似度を評価
         self.instance.group = 13
 
     # fieldsにあるフィールドは以下で書き換え可能
