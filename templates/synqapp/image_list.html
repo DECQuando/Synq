@@ -31,6 +31,13 @@
                                         <p class="card-text">{{ img.name }}</p>
                                         {# pkはprimary keyの略 #}
                                         {{ img.created_at|date:"Y年n月j日 H:i:s" }}
+                                        <br>
+                                        {{ img.group }}
+                                        <br>
+{#                                        templatetags/index.pyの関数を使用#}
+{#                                        countリストからforloop.counter0 番目の値を取得#}
+                                        {% load index %}
+                                        {{ count|index:forloop.counter0 }}
                                     </a>
                                     <p>
                                         <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#example-{{ forloop.counter }}" aria-expand="false" aria-controls="example-{{ forloop.counter }}">
