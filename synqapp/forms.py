@@ -13,7 +13,7 @@ class ImageForm(forms.ModelForm):
         super(ImageForm, self).__init__(*args, **kwargs)
         self.instance.group = 13
 
-        # fieldsにあるフィールドは以下で書き換え可能
-        # def clean(self):
-        #     self.cleaned_data["name"] = your_name
-        #     return self.cleaned_data
+    # fieldsにあるフィールドは以下で書き換え可能
+    # def clean(self):
+    #     self.cleaned_data["name"] = "Mr. Hello"
+    #     return self.cleaned_data
