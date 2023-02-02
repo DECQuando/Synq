@@ -9,98 +9,25 @@
         <div class="container">
             <div class="row row-cols-5 row-cols-sm-5 row-cols-md-5 g-3">
                 {% for img in image_context_list %}
-{#                    templatetags/index.pyの関数を使用#}
-{#                    countリストからimg.group番目の値を取得#}
-                    {% load index %}
-{#                    count[img.group]が1のとき (グループに属する画像が1枚だけのとき)#}
+{#                    img_list_card.htmlにisCollapseを渡して表示#}
+{#                    isCollapse: false (グルーピング画像無し)#}
+{#                    isCollpase: true-open (グルーピング画像あり、初期表示する画像)#}
+{#                    isCollpase: true-open (グルーピング画像あり、初期表示しない画像)#}
+                    {% load index %}        {# templatetags/index.pyの関数を読み込み #}
                     {% if count|index_minus1:img.group == 1 %}
-{#                        collapse無しで作成#}
-                        A
-                        {% include "synqapp/includes/img_list_card.html" with isCollapse="false" %}
+                            {# count[img.group]が1のとき (グループに属する画像が1枚だけのとき) #}
+                            {% include "synqapp/includes/img_list_card.html" with isCollapse="false" %}
                     {% else %}
-{#                        グループに属する画像が複数枚で、その1番目の画像のとき#}
                         {% if pk_in_group|index:forloop.counter0 == 1 %}
-{#                            collapse無しで作成#}
-                            B
+                            {# グループに属する画像が複数枚で、その1番目の画像のとき #}
                             {% include "synqapp/includes/img_list_card.html" with isCollapse="true-open" %}
                         {% else %}
-{#                            collapseありで作成#}
-                            C
+                            {# グループに属する画像が複数枚で、その2番目以降の画像のとき #}
                             {% include "synqapp/includes/img_list_card.html" with isCollapse="true-close" %}
-{#                            id=img_{{ img.group }}#}
                         {% endif %}
                     {% endif %}
                 {% endfor %}
             </div>
         </div>
     </div>
-    {#                    <div class="col">#}
-{#                        h-100でカードの高さを揃える#}
-{#                        <div class="card-group h-100">#}
-{#                            <div class="card shadow-sm">#}
-{#                                {% if img.image %}#}
-{#                                    <img src="{{ img.image.url }}" alt="{{ img.name }}の写真">#}
-{#                                    <img class="img-thumbnail" src="{{ img.image.url }}" alt="{{ img.name }}の写真">#}
-{#                                {% else %}#}
-{#                                    <svg class="bd-placeholder-img card-img-top" width="100%" height="225"#}
-{#                                         xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"#}
-{#                                         focusable="false" role="img" aria-label="Placeholder: Image cap">#}
-{#                                        <title>Placeholder</title>#}
-{#                                        <rect fill="#868e96" width="100%" height="100%"/>#}
-{#                                        <text fill="#dee2e6" dy=".3em" x="40%" y="50%">Thumbnail</text>#}
-{#                                    </svg>#}
-                                    {#                  <img src="/media/sample.jpg" alt="sample画像">#}
-{#                                {% endif %}#}
-{#                                <div class="card-body">#}
-{#                                    <a class="card-text" href="{% url 'synqapp:image_detail' img.pk %}">#}
-{#                                        <p class="card-text">{{ img.name }}</p>#}
-                                        {# pkはprimary keyの略 #}
-{#                                        {{ img.created_at|date:"Y年n月j日 H:i:s" }}#}
-{#                                        <br>#}
-{#                                        {{ img.group }}#}
-{#                                        <br>#}
-{#                                        templatetags/index.pyの関数を使用#}
-{#                                        countリストからforloop.counter0 番目の値を取得#}
-{#                                        {% load index %}#}
-{#                                        {{ count|index:forloop.counter0 }}#}
-{#                                    </a>#}
-{#                                    <p>#}
-{#                                        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#example-{{ forloop.counter }}" aria-expand="false" aria-controls="example-{{ forloop.counter }}">#}
-{#                                            Open#}
-{#                                        </button>#}
-{#                                    </p>#}
-{#                                </div>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                    <div class="col collapse" id="example-{{ forloop.counter }}">#}
-{#                        <div class="card-group h-100">#}
-{#                            <div class="card shadow-sm">#}
-{#                                {% if img.image %}#}
-{#                                    <img src="{{ img.image.url }}" alt="{{ img.name }}の写真">#}
-{#                                {% else %}#}
-{#                                    <svg class="bd-placeholder-img card-img-top" width="100%" height="225"#}
-{#                                         xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"#}
-{#                                         focusable="false" role="img" aria-label="Placeholder: Image cap">#}
-{#                                        <title>Placeholder</title>#}
-{#                                        <rect fill="#868e96" width="100%" height="100%"/>#}
-{#                                        <text fill="#dee2e6" dy=".3em" x="40%" y="50%">Thumbnail</text>#}
-{#                                    </svg>#}
-                                    {#                  <img src="/media/sample.jpg" alt="sample画像">#}
-{#                                {% endif %}#}
-{#                                <div class="card-body">#}
-{#                                    <a class="card-text" href="{% url 'synqapp:image_detail' img.pk %}">#}
-{#                                        <p class="card-text">{{ img.name }}</p>#}
-                                        {# pkはprimary keyの略 #}
-{#                                        {{ img.created_at|date:"Y年n月j日 H:i:s" }}#}
-{#                                    </a>#}
-{#                                    <p>#}
-{#                                        <button class="btn btn-warning" type="button" data-bs-toggle="collapse" data-bs-target="#example-{{ forloop.counter }}" aria-expand="false" aria-controls="example-{{ forloop.counter }}">#}
-{#                                            Close#}
-{#                                        </button>#}
-{#                                    </p>#}
-{#                                </div>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
 {% endblock %}
