@@ -8,3 +8,8 @@ register = template.Library()
 @register.filter
 def index(indexable, i):
     return indexable[i]
+
+
+@register.filter
+def index_minus1(indexable, i):
+    return indexable[i-1]
