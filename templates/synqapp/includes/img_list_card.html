@@ -1,0 +1,47 @@
+{#image_list.htmlから渡されたisCollapseによって、条件分岐#}
+{% if isCollapse == "false" or isCollapse == "true-open" %}
+    <div class="col">
+{% else %}
+    <div class="col collapse" id="img-{{ img.group }}">
+{% endif %}
+
+{#    h-100でカードの高さを揃える#}
+    <div class="card-group h-100">
+        <div class="card shadow-sm">
+            {% if img.image %}
+                <img src="{{ img.image.url }}" alt="{{ img.name }}の写真">
+            {% else %}
+                <svg class="bd-placeholder-img card-img-top" width="100%" height="225"
+                     xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"
+                     focusable="false" role="img" aria-label="Placeholder: Image cap">
+                    <title>Placeholder</title>
+                    <rect fill="#868e96" width="100%" height="100%"/>
+                    <text fill="#dee2e6" dy=".3em" x="40%" y="50%">Thumbnail</text>
+                </svg>
+            {% endif %}
+            <div class="card-body">
+                <a class="card-text" href="{% url 'synqapp:image_detail' img.pk %}">
+                    <p class="card-text">{{ img.name }}</p>
+                    {# pkはprimary keyの略 #}
+                    {{ img.created_at|date:"Y年n月j日 H:i:s" }}
+                    <br>
+                    {{ img.group }}
+                    <br>
+                </a>
+                {% if isCollapse == "true-open" or isCollapse == "true-close" %}
+                    <p>
+                        {% if isCollapse == "true-open" %}
+                            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#img-{{ img.group }}" aria-expand="false" aria-controls="img-{{ img.group }}">
+                                Open
+                            </button>
+                        {% else %}
+                            <button class="btn btn-warning" type="button" data-bs-toggle="collapse" data-bs-target="#img-{{ img.group }}" aria-expand="false" aria-controls="img-{{ img.group }}">
+                                Close
+                            </button>
+                        {% endif %}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
