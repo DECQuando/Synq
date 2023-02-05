@@ -1,0 +1,6 @@
+/*Bootstrapのカスタマイズ用CSSファイル*/
+/*写真のカード表示で，写真のサムネイルのサイズを揃える*/
+.card-customize{
+    object-fit: contain;
+    aspect-ratio: 3/2;
+}

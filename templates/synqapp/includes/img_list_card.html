@@ -9,7 +9,7 @@
     <div class="card-group h-100">
         <div class="card shadow-sm">
             {% if img.image %}
-                <img src="{{ img.image.url }}" alt="{{ img.name }}の写真">
+                <img src="{{ img.image.url }}" class="card-customize" alt="{{ img.name }}の写真">
             {% else %}
                 <svg class="bd-placeholder-img card-img-top" width="100%" height="225"
                      xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"
