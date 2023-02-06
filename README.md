@@ -2,6 +2,17 @@
 
 # 使い方
 
+## コンソールからDBの値を取得
+[Djangoで実行されたクエリを確認したい(connection.queries)](https://www.denzow.me/entry/2018/06/13/234953)
+
+```python
+from django.db import connection
+from synqapp.models import Image
+
+Image.objects.filter(id=1)
+# <QuerySet [<Image: 作成日: 2023-01-26 04:05:21+00:00 作成者: admin　グループID: 1>]>
+```
+
 ## コードのフォーマット
 Pycharmでコードのフォーマットをするには、
 ```bash
