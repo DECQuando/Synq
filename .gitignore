@@ -163,3 +163,4 @@ cython_debug/
 *.pyc
 __pycache__/
 db-volumes/
+migrations/
