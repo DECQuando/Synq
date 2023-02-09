@@ -41,9 +41,7 @@ class ImageForm(forms.ModelForm):
         # グループ中のベストショットの有無を確認(新規グループ作成時は存在しないため分岐必須)
         if obj.filter(is_best_shot=True).exists():
             # 元々のベストショットのフラグを消去する
-            obj_old_best_shot = obj.get(is_best_shot=True)
-            obj_old_best_shot.is_best_shot = None
-            obj_old_best_shot.save()
+            obj.filter(is_best_shot=True).update(is_best_shot=None)
 
         # 新しくベストショットのフラグを付与する
         # TODO: ベストショット選出アルゴリズムを実装し最大idの画像にフラグを付与する箇所を置き換える
