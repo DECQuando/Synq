@@ -1,4 +1,6 @@
 from django import forms
+from django.db.models import Max
+
 from .models import Image
 import cv2
 import numpy as np
@@ -15,6 +17,7 @@ class ImageForm(forms.ModelForm):
         obj = super(ImageForm, self).save(commit=False)
         obj.group = 13
         obj.save()
+        self.select_best_shot(obj.group)
         return obj
 
         # formの初期値を設定
@@ -31,3 +34,17 @@ class ImageForm(forms.ModelForm):
     # def clean(self):
     #     self.cleaned_data["name"] = "Mr. Hello"
     #     return self.cleaned_data
+
+    def select_best_shot(self, group_id):
+        obj = Image.objects.filter(group=group_id)
+
+        # 元々のベストショットのフラグを消去する
+        obj_old_best_shot = obj.get(is_best_shot=True)
+        obj_old_best_shot.is_best_shot = None
+        obj_old_best_shot.save()
+
+        # 新しくベストショットのフラグを付与する
+        # TODO: ベストショット選出アルゴリズムを実装し最大idの画像にフラグを付与する箇所を置き換える
+        obj_new_best_shot = obj.get(id=obj.aggregate(Max('id'))['id__max'])
+        obj_new_best_shot.is_best_shot = True
+        obj_new_best_shot.save()
