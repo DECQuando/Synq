@@ -21,7 +21,9 @@ class Image(models.Model):
     # TODO: 新たに画像が追加されたグループでベストショットを選出する, それ以外の画像はNoneまたはNullに設定する
     is_best_shot = models.BooleanField(null=True, blank=True, verbose_name="ベストショットか否か",
                                        help_text="ベストショットの画像はTrue, グループ内にTrueは一つのみ")
+    edge_sharpness = models.FloatField(null=True, blank=True, verbose_name="エッジの鋭さ", help_text="エッジの鋭さはグループごとに比較する")
 
     def __str__(self):
         """管理者画面での表示形式を定義"""
-        return "作成日: {} 作成者: {}　グループID: {}".format(self.created_at, self.name, self.group)
+        return "作成日: {} 作成者: {}　グループID: {} ベストショット: {} エッジの鋭さ: {}".format(self.created_at, self.name, self.group,
+                                                                                 self.is_best_shot, self.edge_sharpness)
