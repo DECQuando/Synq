@@ -24,7 +24,7 @@ class ImageForm(forms.ModelForm):
         image_relative_path = Path(obj.image.url.replace('/', '', 1))
         image_absolute_path = BASE_DIR / image_relative_path
         image = cv2.imread(str(image_absolute_path))
-        obj.blur = self.variance_of_laplacian(image)
+        obj.edge_sharpness = self.variance_of_laplacian(image)
 
         obj.save()
         self.select_best_shot(obj.group)
