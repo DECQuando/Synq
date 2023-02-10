@@ -2,9 +2,12 @@ from django import forms
 from django.db.models import Max
 
 from .models import Image
+from Synq.settings import BASE_DIR
+
 import cv2
 import numpy as np
 from PIL import Image as PILImage
+from pathlib import Path
 
 
 class ImageForm(forms.ModelForm):
@@ -16,6 +19,13 @@ class ImageForm(forms.ModelForm):
     def save(self, *args, **kwargs):
         obj = super(ImageForm, self).save(commit=False)
         obj.group = 13
+
+        # 画像のBASE_DIRからの相対パスを取得(first forward slashを除去)
+        image_relative_path = Path(obj.image.url.replace('/', '', 1))
+        image_absolute_path = BASE_DIR / image_relative_path
+        image = cv2.imread(str(image_absolute_path))
+        obj.blur = self.variance_of_laplacian(image)
+
         obj.save()
         self.select_best_shot(obj.group)
         return obj
@@ -48,3 +58,9 @@ class ImageForm(forms.ModelForm):
         obj_new_best_shot = obj.get(id=obj.aggregate(Max('id'))['id__max'])
         obj_new_best_shot.is_best_shot = True
         obj_new_best_shot.save()
+
+    def variance_of_laplacian(self, image):
+        # compute the Laplacian of the image and then return the focus
+        # measure, which is simply the variance of the Laplacian
+        gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+        return cv2.Laplacian(gray, cv2.CV_64F).var()
