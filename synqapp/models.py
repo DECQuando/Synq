@@ -25,4 +25,5 @@ class Image(models.Model):
 
     def __str__(self):
         """管理者画面での表示形式を定義"""
-        return "作成日: {} 作成者: {}　グループID: {}".format(self.created_at, self.name, self.group)
+        return "作成日: {} 作成者: {}　グループID: {} ベストショット: {} エッジの鋭さ: {}".format(self.created_at, self.name, self.group,
+                                                                                 self.is_best_shot, self.edge_sharpness)
