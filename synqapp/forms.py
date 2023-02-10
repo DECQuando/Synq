@@ -54,7 +54,9 @@ class ImageForm(forms.ModelForm):
             obj.filter(is_best_shot=True).update(is_best_shot=None)
 
         # 新しくベストショットのフラグを付与する
-        obj_new_best_shot = obj.get(edge_sharpness=obj.aggregate(Max('edge_sharpness'))['edge_sharpness__max'])
+        obj_new_best_shot = obj.filter(
+            edge_sharpness=obj.aggregate(Max('edge_sharpness'))['edge_sharpness__max']
+        ).first()
         obj_new_best_shot.is_best_shot = True
         obj_new_best_shot.save()
 
