@@ -27,12 +27,13 @@ class ImageForm(forms.ModelForm):
             img_latest_url = latest_data.image.url
             img_latest_path = base_dir + img_latest_url
             # 画像データをCV2で数値化
+            print(img_latest_path)
             img_latest = cv2.imread(img_latest_path)
             # imgsimライブラリで画像をベクトル化
             vtr = imgsim.Vectorizer()
             vec_img_latest = vtr.vectorize(img_latest)
 
-        obj.group = 15
+        obj.group = latest_group
         obj.save()
         img_upload_path = base_dir + obj.image.url
         img_upload = cv2.imread(img_upload_path)
