@@ -13,6 +13,10 @@ class ImageForm(forms.ModelForm):
 
     def save(self, *args, **kwargs):
         obj = super(ImageForm, self).save(commit=False)
+        # DBにデータが存在するか確認
+        if Image.objects.exists():
+            pass
+
         obj.group = 13
         obj.save()
         return obj
