@@ -7,7 +7,6 @@ from Synq.settings import BASE_DIR
 import cv2
 
 
-
 def calculate_distance(path1: str, path2: str) -> float:
     """
     2つの画像のベクトル間の距離を算出する関数
@@ -40,9 +39,38 @@ def return_group(distance: int, previous_image_group: int, max_distance: int) ->
         print("dist: ", distance)
         return previous_image_group
     else:
-        print("next: ", previous_image_group+1)
+        print("next: ", previous_image_group + 1)
         print("dist: ", distance)
         return previous_image_group + 1
+
+
+def compare_group(uploaded_image_group: int, latest_group: int) -> bool:
+    """
+    アップロードされた画像が新規グループか既存グループの画像か判定する関数
+    :param uploaded_image_group: Group of uploaded image
+    :param latest_group: Group of previous image
+    :return: bool
+    """
+    if uploaded_image_group != latest_group:
+        # 新規グループの画像
+        return True
+    else:
+        # 既存グループの画像
+        return False
+
+
+def variance_of_laplacian(path: str) -> float:
+    """
+    compute the Laplacian of the image and then return the focus
+    measure, which is simply the variance of the Laplacian
+    :param path: Path for the image
+    :return: sharpness
+    """
+    image = cv2.imread(path)
+    gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    sharpness = cv2.Laplacian(gray, cv2.CV_64F).var()
+    # 小数点以下3桁に丸めて返す
+    return round(sharpness, 3)
 
 
 def select_best_shot(group_id: int) -> None:
@@ -65,20 +93,6 @@ def select_best_shot(group_id: int) -> None:
     obj_new_best_shot.is_best_shot = True
     obj_new_best_shot.save()
     return None
-
-
-def variance_of_laplacian(path: str) -> float:
-    """
-    compute the Laplacian of the image and then return the focus
-    measure, which is simply the variance of the Laplacian
-    :param path: Path for the image
-    :return: sharpness
-    """
-    image = cv2.imread(path)
-    gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-    sharpness = cv2.Laplacian(gray, cv2.CV_64F).var()
-    # 小数点以下3桁に丸めて返す
-    return round(sharpness, 3)
 
 
 class ImageForm(forms.ModelForm):
@@ -107,14 +121,27 @@ class ImageForm(forms.ModelForm):
         obj.group = latest_group
         obj.save()
 
-        # 1つ前の画像データがあれば比較
+        # 投稿された画像のパスを取得
+        img_uploaded_path = str(BASE_DIR) + obj.image.url
+
+        # sharpnessを計算
+        obj.edge_sharpness = variance_of_laplacian(img_uploaded_path)
+        # 新規グループの画像かを示すflag
+        is_new_group = True
+
+        # 一つ前の画像データがあれば比較
         if is_first_pic == 0:
             # 一つ前の画像データを取得
             img_latest_path = str(BASE_DIR) + latest_data.image.url
-            # 投稿された画像データを取得
-            img_uploaded_path = str(BASE_DIR) + obj.image.url
             dist = calculate_distance(path1=img_latest_path, path2=img_uploaded_path)
             group = return_group(distance=dist, previous_image_group=latest_group, max_distance=10)
             obj.group = group
-            obj.save()
+            # 新規グループの画像か判定
+            is_new_group = compare_group(group, latest_group)
+        obj.save()
+
+        # 1枚目の画像でなく、新規グループの画像でない場合ベストショットを選出
+        if not is_first_pic and not is_new_group:
+            select_best_shot(obj.group)
+
         return obj
