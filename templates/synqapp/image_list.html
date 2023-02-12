@@ -26,6 +26,8 @@
                             {% include "synqapp/includes/img_list_card.html" with isCollapse="true-close" %}
                         {% endif %}
                     {% endif %}
+                {% empty %}
+                    まだ画像データがありません。
                 {% endfor %}
             </div>
         </div>
