@@ -2,8 +2,18 @@ from django.db import models
 from django.utils import timezone
 from django.core.validators import FileExtensionValidator
 
+from datetime import datetime
+import hashlib
 
-# Create your models here.
+
+def hash_filename(instance, filename):
+    current_time = datetime.now()
+    pre_hash_name = '%s%s%s' % (instance.name, filename, current_time)
+    extension = str(filename).split('.')[-1]
+    hs_filename = '%s.%s' % (hashlib.md5(pre_hash_name.encode()).hexdigest(), extension)
+    return hs_filename
+
+
 class Image(models.Model):
     """
     画像データ
@@ -11,8 +21,8 @@ class Image(models.Model):
     created_at = models.DateTimeField(default=timezone.now, verbose_name='作成日')
     name = models.CharField(max_length=100, verbose_name="名前")
     image = models.ImageField(null=True, blank=True,
-                              # upload_to="media",
-                              # upload_to="uploads/%Y/%m/%d/",
+                              upload_to=hash_filename,
+                              default="media/default_image.png",
                               verbose_name="添付ファイル",
                               validators=[FileExtensionValidator(["jpg", "png"])],
                               )
