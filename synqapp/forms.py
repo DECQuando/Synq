@@ -1,10 +1,11 @@
 import imgsim
 from django import forms
+from django.db.models import Max
+
 from .models import Image
-from django.conf import settings
+from Synq.settings import BASE_DIR
 import cv2
-import numpy as np
-from PIL import Image as PILImage
+
 
 
 def calculate_distance(path1: str, path2: str) -> float:
@@ -44,6 +45,42 @@ def return_group(distance: int, previous_image_group: int, max_distance: int) ->
         return previous_image_group + 1
 
 
+def select_best_shot(group_id: int) -> None:
+    """
+    ベストショットを選択・記録する関数
+    :param group_id:
+    :return: None
+    """
+    obj = Image.objects.filter(group=group_id)
+
+    # グループ中のベストショットの有無を確認(新規グループ作成時は存在しないため分岐必須)
+    if obj.filter(is_best_shot=True).exists():
+        # 元々のベストショットのフラグを消去する
+        obj.filter(is_best_shot=True).update(is_best_shot=None)
+
+    # 新しくベストショットのフラグを付与する
+    obj_new_best_shot = obj.filter(
+        edge_sharpness=obj.aggregate(Max('edge_sharpness'))['edge_sharpness__max']
+    ).first()
+    obj_new_best_shot.is_best_shot = True
+    obj_new_best_shot.save()
+    return None
+
+
+def variance_of_laplacian(path: str) -> float:
+    """
+    compute the Laplacian of the image and then return the focus
+    measure, which is simply the variance of the Laplacian
+    :param path: Path for the image
+    :return: sharpness
+    """
+    image = cv2.imread(path)
+    gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    sharpness = cv2.Laplacian(gray, cv2.CV_64F).var()
+    # 小数点以下3桁に丸めて返す
+    return round(sharpness, 3)
+
+
 class ImageForm(forms.ModelForm):
     class Meta:
         model = Image
@@ -52,7 +89,6 @@ class ImageForm(forms.ModelForm):
 
     def save(self, *args, **kwargs):
         obj = super(ImageForm, self).save(commit=False)
-        base_dir = str(settings.BASE_DIR)
         # DBにデータが存在するか確認
         if Image.objects.exists():
             # 一つ前の投稿データを取得
@@ -74,9 +110,9 @@ class ImageForm(forms.ModelForm):
         # 1つ前の画像データがあれば比較
         if is_first_pic == 0:
             # 一つ前の画像データを取得
-            img_latest_path = base_dir + latest_data.image.url
+            img_latest_path = str(BASE_DIR) + latest_data.image.url
             # 投稿された画像データを取得
-            img_uploaded_path = base_dir + obj.image.url
+            img_uploaded_path = str(BASE_DIR) + obj.image.url
             dist = calculate_distance(path1=img_latest_path, path2=img_uploaded_path)
             group = return_group(distance=dist, previous_image_group=latest_group, max_distance=10)
             obj.group = group
