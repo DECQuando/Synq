@@ -10,9 +10,9 @@
         <div class="card shadow-sm">
             {% if img.image %}
                 {% if img.is_best_shot %}
-                    <img src="{{ img.image.url }}" class="border border-warning card-customize" alt="{{ img.name }}の写真">
+                    <img src="{{ img.image.url }}" class="border border-warning card-customize" alt="{{ img.name }}の写真" loading="lazy">
                 {% else %}
-                    <img src="{{ img.image.url }}" class="card-customize" alt="{{ img.name }}の写真">
+                    <img src="{{ img.image.url }}" class="card-customize" alt="{{ img.name }}の写真" loading="lazy">
                 {% endif %}
             {% else %}
                 <svg class="bd-placeholder-img card-img-top" width="100%" height="225"
