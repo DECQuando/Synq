@@ -15,39 +15,50 @@ class ImageForm(forms.ModelForm):
 
     def save(self, *args, **kwargs):
         obj = super(ImageForm, self).save(commit=False)
-        # DBにデータが存在するか確認
-        # TODO: DBにファイルがないときの例外処理
         base_dir = str(settings.BASE_DIR)
+        # DBにデータが存在するか確認
         if Image.objects.exists():
             # 一つ前の投稿データを取得
             latest_data = Image.objects.latest('created_at')
             # 一つ前の投稿のグループを取得
             latest_group = latest_data.group
             # 一つ前の投稿の画像URLを取得し，BASE_DIRと結合
-            img_latest_url = latest_data.image.url
-            img_latest_path = base_dir + img_latest_url
+            img_latest_path = base_dir + latest_data.image.url
+            # 初めての画像かを示すflag
+            is_first_pic = 0
+        else:
+            # 画像がまだ登録されていないときはgroup=1
+            latest_group = 1
+            # 初めての画像かを示すflag
+            is_first_pic = 1
+
+        # DBに一旦保存
+        obj.group = latest_group
+        obj.save()
+
+        # 1つ前の画像データがあれば
+        if is_first_pic == 0:
+            # 一つ前の画像データを取得
             # 画像データをCV2で数値化
-            print(img_latest_path)
             img_latest = cv2.imread(img_latest_path)
             # imgsimライブラリで画像をベクトル化
             vtr = imgsim.Vectorizer()
             vec_img_latest = vtr.vectorize(img_latest)
 
-        obj.group = latest_group
-        obj.save()
-        img_upload_path = base_dir + obj.image.url
-        img_upload = cv2.imread(img_upload_path)
-        vec_img_upload = vtr.vectorize(img_upload)
-        dist = imgsim.distance(vec_img_latest, vec_img_upload)
-        if dist <= 10:
-            group = latest_group
-            print("group_same: ", group)
-        else:
-            group = latest_group + 1
-            print("group_next: ", group)
-        print("dist: ", dist)
-        obj.group = group
-        obj.save()
+            # 投稿された画像データを取得
+            img_uploaded_path = base_dir + obj.image.url
+            img_uploaded = cv2.imread(img_uploaded_path)
+            vec_img_uploaded = vtr.vectorize(img_uploaded)
+            dist = imgsim.distance(vec_img_latest, vec_img_uploaded)
+            if dist <= 10:
+                group = latest_group
+                print("group_same: ", group)
+            else:
+                group = latest_group + 1
+                print("group_next: ", group)
+            print("dist: ", dist)
+            obj.group = group
+            obj.save()
         return obj
 
         # formの初期値を設定
