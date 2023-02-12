@@ -1,13 +1,47 @@
+import imgsim
 from django import forms
-from django.db.models import Max
-
 from .models import Image
-from Synq.settings import BASE_DIR
-
+from django.conf import settings
 import cv2
 import numpy as np
 from PIL import Image as PILImage
-from pathlib import Path
+
+
+def calculate_distance(path1: str, path2: str) -> float:
+    """
+    2つの画像のベクトル間の距離を算出する関数
+    :param path1: Path for the first image
+    :param path2: Path for the second image
+    :return: Vector distance between two images
+    """
+    # pathから画像データを取得
+    img1 = cv2.imread(path1)
+    img2 = cv2.imread(path2)
+    # imgsimライブラリで画像をベクトル化
+    vtr = imgsim.Vectorizer()
+    vec1 = vtr.vectorize(img1)
+    vec2 = vtr.vectorize(img2)
+    # 2つのベクトル間の距離を算出
+    dist = imgsim.distance(vec1, vec2)
+    return dist
+
+
+def return_group(distance: int, previous_image_group: int, max_distance: int) -> int:
+    """
+    グループの番号を返す関数
+    :param distance: Vector distance between two images
+    :param previous_image_group: Group of the previous image
+    :param max_distance: Maximum distance to be considered as the same group
+    :return: Group number of the uploaded image
+    """
+    if distance <= max_distance:
+        print("same: ", previous_image_group)
+        print("dist: ", distance)
+        return previous_image_group
+    else:
+        print("next: ", previous_image_group+1)
+        print("dist: ", distance)
+        return previous_image_group + 1
 
 
 class ImageForm(forms.ModelForm):
@@ -18,53 +52,33 @@ class ImageForm(forms.ModelForm):
 
     def save(self, *args, **kwargs):
         obj = super(ImageForm, self).save(commit=False)
-        obj.group = 13
-        # 次のエッジの鋭さを計算する時点でデータベースに画像が格納されていなければならない実装なのでここで一度格納
-        obj.save()
-        # TODO: requestから画像データを取得する実装に変更可能か調査、可能なら変更する
+        base_dir = str(settings.BASE_DIR)
+        # DBにデータが存在するか確認
+        if Image.objects.exists():
+            # 一つ前の投稿データを取得
+            latest_data = Image.objects.latest('created_at')
+            # 一つ前の投稿のグループを取得
+            latest_group = latest_data.group
+            # 初めての画像かを示すflag
+            is_first_pic = 0
+        else:
+            # 画像がまだ登録されていないときはgroup=1
+            latest_group = 1
+            # 初めての画像かを示すflag
+            is_first_pic = 1
 
-        # 画像のBASE_DIRからの相対パスを取得(first forward slashを除去)
-        image_relative_path = Path(obj.image.url.replace('/', '', 1))
-        image_absolute_path = BASE_DIR / image_relative_path
-        image = cv2.imread(str(image_absolute_path))
-        obj.edge_sharpness = self.variance_of_laplacian(image)
+        # DBに一旦保存
+        obj.group = latest_group
         obj.save()
 
-        self.select_best_shot(obj.group)
+        # 1つ前の画像データがあれば比較
+        if is_first_pic == 0:
+            # 一つ前の画像データを取得
+            img_latest_path = base_dir + latest_data.image.url
+            # 投稿された画像データを取得
+            img_uploaded_path = base_dir + obj.image.url
+            dist = calculate_distance(path1=img_latest_path, path2=img_uploaded_path)
+            group = return_group(distance=dist, previous_image_group=latest_group, max_distance=10)
+            obj.group = group
+            obj.save()
         return obj
-
-        # formの初期値を設定
-    # def __init__(self, *args, **kwargs):
-    #     super(ImageForm, self).__init__(*args, **kwargs)
-    #     # TODO: 画像の類似度を評価
-    #     self.instance.group = 13
-
-        # img_pil = PILImage.open(self.instance.image)
-        # img = np.asarray(np.array(img_pil))
-        # print(img)
-
-    # fieldsにあるフィールドは以下で書き換え可能
-    # def clean(self):
-    #     self.cleaned_data["name"] = "Mr. Hello"
-    #     return self.cleaned_data
-
-    def select_best_shot(self, group_id):
-        obj = Image.objects.filter(group=group_id)
-
-        # グループ中のベストショットの有無を確認(新規グループ作成時は存在しないため分岐必須)
-        if obj.filter(is_best_shot=True).exists():
-            # 元々のベストショットのフラグを消去する
-            obj.filter(is_best_shot=True).update(is_best_shot=None)
-
-        # 新しくベストショットのフラグを付与する
-        obj_new_best_shot = obj.filter(
-            edge_sharpness=obj.aggregate(Max('edge_sharpness'))['edge_sharpness__max']
-        ).first()
-        obj_new_best_shot.is_best_shot = True
-        obj_new_best_shot.save()
-
-    def variance_of_laplacian(self, image):
-        # compute the Laplacian of the image and then return the focus
-        # measure, which is simply the variance of the Laplacian
-        gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-        return cv2.Laplacian(gray, cv2.CV_64F).var()
