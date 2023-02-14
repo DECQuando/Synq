@@ -106,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # login logoutのurl
 LOGIN_URL = 'accounts:login'
-LOGIN_URL = 'accounts:logout'
+LOGOUT_URL = 'auth:logout'
 LOGIN_REDIRECT_URL = 'synqapp:welcome'
 LOGOUT_REDIRECT_URL = 'accounts:login'
 
