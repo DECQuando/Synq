@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from django.views import View
 from django.views import generic
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Image
 from .forms import ImageForm
 from django.urls import reverse_lazy
 
 
-class WelcomeView(View):
+class WelcomeView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return render(request, "synqapp/welcome.html")
 
@@ -15,7 +16,7 @@ class WelcomeView(View):
 welcome_page = WelcomeView.as_view()
 
 
-class ImagePost(generic.CreateView):
+class ImagePost(LoginRequiredMixin, generic.CreateView):
     model = Image
     form_class = ImageForm
     template_name = "synqapp/image_form.html"
@@ -25,7 +26,7 @@ class ImagePost(generic.CreateView):
     success_url = reverse_lazy('synqapp:image_post')
 
 
-class ImageList(generic.ListView):
+class ImageList(LoginRequiredMixin, generic.ListView):
     model = Image
     ordering = "-created_at"
     template_name = "synqapp/image_list.html"
@@ -73,7 +74,7 @@ class ImageList(generic.ListView):
         return context
 
 
-class ImageDetail(generic.DetailView):
+class ImageDetail(LoginRequiredMixin, generic.DetailView):
     model = Image
     template_name = "synqapp/image_detail.html"
     context_object_name = "image_context"
