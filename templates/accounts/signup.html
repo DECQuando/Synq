@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block theme %}
+    登録
+{% endblock %}
+
+{% block contents %}
+    <div class="text-center">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="fieldWrapper">
+                    {{ field.errors }}
+                    {{ field.label_tag }} {{ field }}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary btn-lg">登録</button>
+        </form>
+    </div>
+{% endblock %}

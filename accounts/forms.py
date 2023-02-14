@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth.forms import UserCreationForm
 from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
 
@@ -52,3 +53,9 @@ class EmailAuthenticationForm(forms.Form):
 
     def get_user(self):
         return self.user_cache
+
+
+class SignUpForm(UserCreationForm):
+    class Meta:
+        model = UserModel
+        fields = [UserModel.USERNAME_FIELD] + UserModel.REQUIRED_FIELDS + ['password1', 'password2']
