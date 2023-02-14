@@ -1,15 +1,25 @@
-{% extends "base.html" %}
+{% extends "form_centered.html" %}
 
 {% block theme %}
     ログイン
 {% endblock %}
 
 {% block contents %}
-    <div class="text-center">
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary btn-lg">ログイン</button>
-        </form>
+    <div class="container-fluid">
+        <div class="card mb-3">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <table class="table">{{ form.as_table }}</table>
+
+                {% if redirect_field_value %}
+                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+                {% endif %}
+
+                <div class="d-flex align-items-center justify-content-center">
+                    <button type="submit" class="btn btn-primary btn-lg center-block">ログイン</button>
+                </div>
+            </form>
+        </div>
     </div>
 {% endblock %}
