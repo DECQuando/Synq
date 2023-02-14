@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
+    "accounts.apps.AccountsConfig",
     "synqapp.apps.SynqappConfig",
 ]
 
@@ -87,6 +89,8 @@ DATABASES = {
     }
 }
 
+# 認証に利用するための宣言
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -100,6 +104,11 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
 
+# login logoutのurl
+LOGIN_URL = 'accounts:login'
+LOGOUT_URL = 'auth:logout'
+LOGIN_REDIRECT_URL = 'synqapp:welcome'
+LOGOUT_REDIRECT_URL = 'accounts:login'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
