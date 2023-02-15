@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views import View
 from django.views import generic
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from .models import Image
 from .forms import ImageForm
@@ -82,7 +82,13 @@ class ImageList(LoginRequiredMixin, generic.ListView):
         return context
 
 
-class ImageDetail(LoginRequiredMixin, generic.DetailView):
+class ImageDetail(LoginRequiredMixin, UserPassesTestMixin, generic.DetailView):
     model = Image
     template_name = "synqapp/image_detail.html"
     context_object_name = "image_context"
+
+    def test_func(self):
+        current_user = self.request.user
+        image_id = self.kwargs['pk']
+        has_perm = current_user.id == Image.objects.get(pk=image_id).user_id
+        return has_perm or current_user.is_superuser
