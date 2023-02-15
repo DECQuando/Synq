@@ -57,6 +57,11 @@
                         <a class="btn btn-outline-light btn-sm mx-2" href="{% url 'accounts:signup' %}"
                            role="button">新規登録</a>
                     {% endif %}
+                    {% url 'accounts:login' as account_login %}
+                    {% if not account_login in request.path %}
+                        <a class="btn btn-outline-light btn-sm mx-2" href="{% url 'accounts:login' %}"
+                           role="button">ログイン</a>
+                    {% endif %}
                 {% endif %}
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader"
                         aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
