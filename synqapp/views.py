@@ -50,7 +50,7 @@ class ImageList(LoginRequiredMixin, generic.ListView):
         # グループ内での画像の番号を格納する変数
         pk = 1
 
-        if Image.objects.exists():
+        if self.object_list.exists():
             for i, image in enumerate(self.object_list):
                 group = image.group
                 image_group_list.append(group)      # 下でgroup_count_listを作成するときに使用
