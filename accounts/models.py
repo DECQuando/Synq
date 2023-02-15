@@ -63,13 +63,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(
         _('username'),
         max_length=50,
-        help_text=_('この項目は必須です。全角文字、半角英数字、@/./+/-/_ で50文字以下にしてください。'),
+        help_text=_('全角文字、半角英数字、@/./+/-/_ で50文字以下にしてください。'),
         validators=[username_validator],
     )
     email = models.EmailField(
         _('email address'),
         max_length=255,
-        help_text='この項目は必須です。',
         unique=True,
     )
     is_staff = models.BooleanField(
