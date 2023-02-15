@@ -32,10 +32,13 @@ class ImagePost(LoginRequiredMixin, generic.CreateView):
 
 
 class ImageList(LoginRequiredMixin, generic.ListView):
-    model = Image
-    ordering = "-created_at"
     template_name = "synqapp/image_list.html"
     context_object_name = "image_context_list"
+
+    # アクセスしたユーザーIDで画像をフィルタ
+    def get_queryset(self):
+        user_id = self.request.user.id
+        return Image.objects.filter(user_id=user_id).order_by("-created_at")
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(ImageList, self).get_context_data(**kwargs)
