@@ -103,6 +103,10 @@ class ImageForm(forms.ModelForm):
 
     def save(self, *args, **kwargs):
         obj = super(ImageForm, self).save(commit=False)
+
+        # フォームからユーザーIDを取得し格納
+        obj.user_id = obj.user.id
+
         # DBにデータが存在するか確認
         if Image.objects.exists():
             # 一つ前の投稿データを取得
