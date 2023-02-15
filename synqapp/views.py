@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views import View
 from django.views import generic
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from .models import Image
 from .forms import ImageForm
@@ -32,10 +32,13 @@ class ImagePost(LoginRequiredMixin, generic.CreateView):
 
 
 class ImageList(LoginRequiredMixin, generic.ListView):
-    model = Image
-    ordering = "-created_at"
     template_name = "synqapp/image_list.html"
     context_object_name = "image_context_list"
+
+    # アクセスしたユーザーIDで画像をフィルタ
+    def get_queryset(self):
+        user_id = self.request.user.id
+        return Image.objects.filter(user_id=user_id).order_by("-created_at")
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(ImageList, self).get_context_data(**kwargs)
@@ -50,7 +53,7 @@ class ImageList(LoginRequiredMixin, generic.ListView):
         # グループ内での画像の番号を格納する変数
         pk = 1
 
-        if Image.objects.exists():
+        if self.object_list.exists():
             for i, image in enumerate(self.object_list):
                 group = image.group
                 image_group_list.append(group)      # 下でgroup_count_listを作成するときに使用
@@ -79,7 +82,13 @@ class ImageList(LoginRequiredMixin, generic.ListView):
         return context
 
 
-class ImageDetail(LoginRequiredMixin, generic.DetailView):
+class ImageDetail(LoginRequiredMixin, UserPassesTestMixin, generic.DetailView):
     model = Image
     template_name = "synqapp/image_detail.html"
     context_object_name = "image_context"
+
+    def test_func(self):
+        current_user = self.request.user
+        image_id = self.kwargs['pk']
+        has_perm = current_user.id == Image.objects.get(pk=image_id).user_id
+        return has_perm or current_user.is_superuser
