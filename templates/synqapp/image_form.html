@@ -1,15 +1,9 @@
-{% extends 'base.html' %}
+{% extends "form_centered.html" %}
 
 {% block theme %}
-投稿画面
+    投稿画面
 {% endblock %}
 
-{% block contents %}
-    <div class="text-center">
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary btn-lg">送信</button>
-        </form>
-    </div>
+{% block button %}
+    <button type="submit" class="btn btn-primary btn-lg center-block">送信</button>
 {% endblock %}
