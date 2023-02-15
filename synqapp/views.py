@@ -25,6 +25,11 @@ class ImagePost(LoginRequiredMixin, generic.CreateView):
     # そのnameをurlに変換するのがreverse_lazy。
     success_url = reverse_lazy('synqapp:image_post')
 
+    # バリデーションの際にユーザーの情報を付与
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
 
 class ImageList(LoginRequiredMixin, generic.ListView):
     model = Image

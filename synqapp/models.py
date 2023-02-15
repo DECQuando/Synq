@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 from django.core.validators import FileExtensionValidator
@@ -32,6 +33,10 @@ class Image(models.Model):
     is_best_shot = models.BooleanField(null=True, blank=True, verbose_name="ベストショットか否か",
                                        help_text="ベストショットの画像はTrue, グループ内にTrueは一つのみ")
     edge_sharpness = models.FloatField(null=True, blank=True, verbose_name="エッジの鋭さ", help_text="エッジの鋭さはグループごとに比較する")
+    user = models.ForeignKey(
+        get_user_model(),
+        verbose_name="ユーザー", on_delete=models.CASCADE,
+    )
 
     def __str__(self):
         """管理者画面での表示形式を定義"""
