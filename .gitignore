@@ -164,3 +164,8 @@ cython_debug/
 __pycache__/
 db-volumes/
 migrations/
+
+# ignore local image files located at media
+media/*.png
+media/*.jpg
+media/CACHE

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "imagekit",
 
     "accounts.apps.AccountsConfig",
     "synqapp.apps.SynqappConfig",

@@ -5,6 +5,8 @@ from django.core.validators import FileExtensionValidator
 
 from datetime import datetime
 import hashlib
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 
 
 def hash_filename(instance, filename):
@@ -27,6 +29,13 @@ class Image(models.Model):
                               verbose_name="添付ファイル",
                               validators=[FileExtensionValidator(["jpg", "png"])],
                               )
+    thumbnail = ImageSpecField(source='image',
+                               processors=[ResizeToFill(300, 200)],
+                               format="JPEG",
+                               options={'quality': 85}
+                               # qualityはGoogleの方針に従った
+                               # cf. https://developers.google.com/speed/docs/insights/OptimizeImages?hl=ja
+                               )
     # TODO: 一つ前の画像と比較して、類似度を算出し、group番号を付与する
     group = models.IntegerField(null=True, blank=True, verbose_name="グループID")
     # TODO: 新たに画像が追加されたグループでベストショットを選出する, それ以外の画像はNoneまたはNullに設定する
