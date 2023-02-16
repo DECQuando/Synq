@@ -26,7 +26,7 @@ def calculate_distance(path1: str, path2: str) -> float:
     return dist
 
 
-def return_group(distance: int, previous_image_group: int, max_distance: int) -> int:
+def return_group(distance: float, previous_image_group: int, max_distance: int) -> int:
     """
     グループの番号を返す関数
     :param distance: Vector distance between two images
