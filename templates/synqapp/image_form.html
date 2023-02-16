@@ -4,6 +4,20 @@
     投稿画面
 {% endblock %}
 
-{% block button %}
-    <button type="submit" class="btn btn-primary btn-lg center-block">送信</button>
+{% block form %}
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <table class="table">{{ form.as_table }}</table>
+
+        {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+        {% endif %}
+
+        <div class="d-flex align-items-center justify-content-center">
+            {% block button %}
+                <button type="submit" class="btn btn-primary btn-lg center-block">送信</button>
+            {% endblock %}
+        </div>
+    </form>
 {% endblock %}

@@ -14,21 +14,23 @@
 {% block contents %}
     <div class="container-fluid">
         <div class="card mb-3">
-            <form method="POST">
-                {% csrf_token %}
+            {% block form %}
+                <form method="POST">
+                    {% csrf_token %}
 
-                <table class="table">{{ form.as_table }}</table>
+                    <table class="table">{{ form.as_table }}</table>
 
-                {% if redirect_field_value %}
-                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
-                {% endif %}
+                    {% if redirect_field_value %}
+                        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+                    {% endif %}
 
-                <div class="d-flex align-items-center justify-content-center">
-                    {% block button %}
-                        <button type="submit" class="btn btn-primary btn-lg">提出</button>
-                    {% endblock %}
-                </div>
-            </form>
+                    <div class="d-flex align-items-center justify-content-center">
+                        {% block button %}
+                            <button type="submit" class="btn btn-primary btn-lg">提出</button>
+                        {% endblock %}
+                    </div>
+                </form>
+            {% endblock %}
         </div>
     </div>
 {% endblock %}
