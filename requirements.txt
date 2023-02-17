@@ -4,6 +4,7 @@ charset-normalizer==3.0.1
 Django==4.1.5
 django-appconf==1.0.5
 django-imagekit==4.1.0
+django_debug_toolbar==3.8.1
 idna==3.4
 imgsim==0.1.2
 numpy==1.24.1
