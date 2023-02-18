@@ -108,18 +108,27 @@ class ImageForm(forms.ModelForm):
         obj.user_id = obj.user.id
 
         # DBにデータが存在するか確認
-        if Image.objects.exists():
-            # 一つ前の投稿データを取得
-            latest_data = Image.objects.latest('created_at')
-            # 一つ前の投稿のグループを取得
-            latest_group = latest_data.group
-            # 初めての画像かを示すflag
-            is_first_pic = 0
-        else:
+        db_is_empty = not Image.objects.exists()
+        if db_is_empty:  # データが存在しない場合のガード節
+            # DBに一旦保存
             # 画像がまだ登録されていないときはgroup=1
-            latest_group = 1
-            # 初めての画像かを示すflag
-            is_first_pic = 1
+            obj.group = 1
+            obj.save()
+
+            # 投稿された画像のパスを取得
+            img_uploaded_path = str(BASE_DIR) + obj.image.url
+            # sharpnessを計算
+            obj.edge_sharpness = variance_of_laplacian(img_uploaded_path)
+            obj.save()
+
+            return obj
+
+        # 以降はDBに既にデータが存在する場合(exists()==True)の処理
+
+        # 一つ前の投稿データを取得
+        latest_data = Image.objects.latest('created_at')
+        # 一つ前の投稿のグループを取得
+        latest_group = latest_data.group
 
         # DBに一旦保存
         obj.group = latest_group
@@ -127,25 +136,20 @@ class ImageForm(forms.ModelForm):
 
         # 投稿された画像のパスを取得
         img_uploaded_path = str(BASE_DIR) + obj.image.url
-
         # sharpnessを計算
         obj.edge_sharpness = variance_of_laplacian(img_uploaded_path)
-        # 新規グループの画像かを示すflag
-        is_new_group = True
 
-        # 一つ前の画像データがあれば比較
-        if is_first_pic == 0:
-            # 一つ前の画像データを取得
-            img_latest_path = str(BASE_DIR) + latest_data.image.url
-            dist = calculate_distance(path1=img_latest_path, path2=img_uploaded_path)
-            group = return_group(distance=dist, previous_image_group=latest_group, max_distance=10)
-            obj.group = group
-            # 新規グループの画像か判定
-            is_new_group = compare_group(group, latest_group)
+        # 一つ前の画像データを取得
+        img_latest_path = str(BASE_DIR) + latest_data.image.url
+        dist = calculate_distance(path1=img_latest_path, path2=img_uploaded_path)
+        group = return_group(distance=dist, previous_image_group=latest_group, max_distance=10)
+        obj.group = group
         obj.save()
 
-        # 1枚目の画像でなく、新規グループの画像でない場合ベストショットを選出
-        if not is_first_pic and not is_new_group:
+        # 新規グループの画像か判定
+        is_new_group = compare_group(group, latest_group)
+        # 新規グループの画像でない場合ベストショットを選出
+        if not is_new_group:
             select_best_shot(obj.group)
 
         return obj
