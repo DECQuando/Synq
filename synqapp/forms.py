@@ -26,11 +26,11 @@ def calculate_distance(path1: str, path2: str) -> float:
     return dist
 
 
-def return_group(distance: float, previous_image_group: int, max_distance: int) -> int:
+def return_group(previous_image_group: int, distance: float, max_distance: int) -> int:
     """
     グループの番号を返す関数
-    :param distance: Vector distance between two images
     :param previous_image_group: Group of the previous image
+    :param distance: Vector distance between two images
     :param max_distance: Maximum distance to be considered as the same group
     :return: Group number of the uploaded image
     """
@@ -39,24 +39,41 @@ def return_group(distance: float, previous_image_group: int, max_distance: int) 
         print("dist: ", distance)
         return previous_image_group
     else:
-        print("next: ", previous_image_group + 1)
+        new_image_group = fetch_new_group()
+        print("next: ", new_image_group)
         print("dist: ", distance)
-        return previous_image_group + 1
+        return new_image_group
 
 
-def compare_group(uploaded_image_group: int, latest_group: int) -> bool:
+def is_different_group(uploaded_image_group: int, latest_group: int) -> bool:
     """
     アップロードされた画像が新規グループか既存グループの画像か判定する関数
     :param uploaded_image_group: Group of uploaded image
     :param latest_group: Group of previous image
     :return: bool
     """
-    if uploaded_image_group != latest_group:
-        # 新規グループの画像
+    if uploaded_image_group == latest_group:
+        # 既存グループの画像
         return True
     else:
-        # 既存グループの画像
+        # 新規グループの画像
         return False
+
+
+def fetch_new_group() -> int:
+    """
+    新規グループの番号を返す関数
+    :return: int
+    """
+    # DB全体で最後に作られたグループの投稿データを取得
+    latest_group_data = Image.objects.filter(
+        group=Image.objects.aggregate(Max('group'))['group__max']
+    ).first()
+    # 最新のグループを取得
+    latest_group = latest_group_data.group
+    new_group = latest_group + 1
+
+    return new_group
 
 
 def variance_of_laplacian(path: str) -> float:
@@ -125,13 +142,13 @@ class ImageForm(forms.ModelForm):
 
         # 以降はDBに既にデータが存在する場合(exists()==True)の処理
 
-        # 一つ前の投稿データを取得
-        latest_data = Image.objects.latest('created_at')
-        # 一つ前の投稿のグループを取得
-        latest_group = latest_data.group
+        # ユーザーの一つ前の投稿データを取得
+        latest_user_data = Image.objects.filter(user_id=obj.user.id).latest('created_at')
+        # ユーザーの一つ前の投稿のグループを取得
+        latest_user_group = latest_user_data.group
 
         # DBに一旦保存
-        obj.group = latest_group
+        obj.group = latest_user_group
         obj.save()
 
         # 投稿された画像のパスを取得
@@ -140,16 +157,17 @@ class ImageForm(forms.ModelForm):
         obj.edge_sharpness = variance_of_laplacian(img_uploaded_path)
 
         # 一つ前の画像データを取得
-        img_latest_path = str(BASE_DIR) + latest_data.image.url
+        img_latest_path = str(BASE_DIR) + latest_user_data.image.url
         dist = calculate_distance(path1=img_latest_path, path2=img_uploaded_path)
-        group = return_group(distance=dist, previous_image_group=latest_group, max_distance=10)
+        group = return_group(
+            previous_image_group=latest_user_group,
+            distance=dist, max_distance=10
+        )
         obj.group = group
         obj.save()
 
-        # 新規グループの画像か判定
-        is_new_group = compare_group(group, latest_group)
         # 新規グループの画像でない場合ベストショットを選出
-        if not is_new_group:
+        if is_different_group(group, latest_user_group):
             select_best_shot(obj.group)
 
         return obj
