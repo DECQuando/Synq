@@ -26,11 +26,12 @@ def calculate_distance(path1: str, path2: str) -> float:
     return dist
 
 
-def return_group(distance: float, previous_image_group: int, max_distance: int) -> int:
+def return_group(previous_image_group: int, new_image_group: int, distance: float, max_distance: int) -> int:
     """
     グループの番号を返す関数
-    :param distance: Vector distance between two images
     :param previous_image_group: Group of the previous image
+    :param new_image_group: Group of the ungrouped image
+    :param distance: Vector distance between two images
     :param max_distance: Maximum distance to be considered as the same group
     :return: Group number of the uploaded image
     """
@@ -39,9 +40,9 @@ def return_group(distance: float, previous_image_group: int, max_distance: int) 
         print("dist: ", distance)
         return previous_image_group
     else:
-        print("next: ", previous_image_group + 1)
+        print("next: ", new_image_group)
         print("dist: ", distance)
-        return previous_image_group + 1
+        return new_image_group
 
 
 def is_different_group(uploaded_image_group: int, latest_group: int) -> bool:
@@ -139,10 +140,21 @@ class ImageForm(forms.ModelForm):
         # sharpnessを計算
         obj.edge_sharpness = variance_of_laplacian(img_uploaded_path)
 
+        # DB全体で最後に作られたグループの投稿データを取得
+        latest_group_data = Image.objects.filter(
+            group=Image.objects.aggregate(Max('group'))['group__max']
+        ).first()
+        # 最新のグループを取得
+        latest_group = latest_group_data.group
+        new_group = latest_group + 1
+
         # 一つ前の画像データを取得
         img_latest_path = str(BASE_DIR) + latest_user_data.image.url
         dist = calculate_distance(path1=img_latest_path, path2=img_uploaded_path)
-        group = return_group(distance=dist, previous_image_group=latest_user_group, max_distance=10)
+        group = return_group(
+            previous_image_group=latest_user_group, new_image_group=new_group,
+            distance=dist, max_distance=10
+        )
         obj.group = group
         obj.save()
 
