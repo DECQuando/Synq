@@ -9,16 +9,13 @@ import cv2
 import numpy as np
 
 
-def calculate_distance(path1: str, path2: str) -> float:
+def calculate_distance(img1: np.ndarray, img2: np.ndarray) -> float:
     """
     2つの画像のベクトル間の距離を算出する関数
-    :param path1: Path for the first image
-    :param path2: Path for the second image
+    :param img1: The first image
+    :param img2: The second image
     :return: Vector distance between two images
     """
-    # pathから画像データを取得
-    img1 = cv2.imread(path1)
-    img2 = cv2.imread(path2)
     # imgsimライブラリで画像をベクトル化
     vtr = imgsim.Vectorizer()
     vec1 = vtr.vectorize(img1)
@@ -160,13 +157,12 @@ class ImageForm(forms.ModelForm):
         # ユーザーの一つ前の投稿のグループを取得
         latest_user_group = latest_user_data.group
 
-        # DBに一旦保存
-        obj.group = latest_user_group
-        obj.save()
+        # ユーザーの一つ前の画像データを取得
+        latest_img_path = str(BASE_DIR) + latest_user_data.image.url
+        latest_img = cv2.imread(latest_img_path)
 
-        # 一つ前の画像データを取得
-        img_latest_path = str(BASE_DIR) + latest_user_data.image.url
-        dist = calculate_distance(path1=img_latest_path, path2=img_uploaded_path)
+        # グルーピング判定を行い保存
+        dist = calculate_distance(img1=latest_img, img2=uploaded_img)
         group = return_group(
             previous_image_group=latest_user_group,
             distance=dist, max_distance=10
