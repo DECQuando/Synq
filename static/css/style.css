@@ -1,6 +1,43 @@
 /*Bootstrapのカスタマイズ用CSSファイル*/
+
+/*写真の中に画像の情報を表示する*/
+.card-info{
+    position: absolute;
+    bottom: 0;  /*画像の左下に配置*/
+    left: 0;
+    margin: 0;  /*余計な隙間を除く*/
+    color: white;   /*文字を白*/
+    font-size: 15px;    /*背景色*/
+    line-height: 1;     /*行高を1に*/
+    padding: 5px 10px;  /*文字周りの余白*/
+    background: rgba(0, 0, 0, 0.5);
+}
 /*写真のカード表示で，写真のサムネイルのサイズを揃える*/
 .card-customize{
     object-fit: contain;
     aspect-ratio: 3/2;
+}
+/*グルーピングされた画像の開閉ボタン*/
+.card-button{
+    position: absolute;
+    bottom: 0;  /*画像の左下に配置*/
+    right: 0;
+    margin: 0;  /*余計な隙間を除く*/
+    /*color: white;   !*文字を白*!*/
+    /*font-size: 15px;    !*背景色*!*/
+    line-height: 1;     /*行高を1に*/
+    padding: 5px 10px;  /*文字周りの余白*/
+    /*background: rgba(0, 0, 0, 0.5);*/
+}
+/*best-shotの星マーク*/
+.card-best-shot{
+    position: absolute;
+    top: 0;  /*画像の左下に配置*/
+    left: 0;
+    margin: 0;  /*余計な隙間を除く*/
+    /*color: white;   !*文字を白*!*/
+    /*font-size: 15px;    !*背景色*!*/
+    line-height: 1;     /*行高を1に*/
+    padding: 5px 10px;  /*文字周りの余白*/
+    /*background: rgba(0, 0, 0, 0.5);*/
 }
