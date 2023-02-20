@@ -45,7 +45,7 @@ def return_group(previous_image_group: int, distance: float, max_distance: int) 
         return new_image_group
 
 
-def is_different_group(uploaded_image_group: int, latest_group: int) -> bool:
+def is_same_group(uploaded_image_group: int, latest_group: int) -> bool:
     """
     アップロードされた画像が新規グループか既存グループの画像か判定する関数
     :param uploaded_image_group: Group of uploaded image
@@ -167,7 +167,7 @@ class ImageForm(forms.ModelForm):
         obj.save()
 
         # 新規グループの画像でない場合ベストショットを選出
-        if is_different_group(group, latest_user_group):
-            select_best_shot(obj.group)
+        if is_same_group(group, latest_user_group):
+            select_best_shot(group)
 
         return obj
