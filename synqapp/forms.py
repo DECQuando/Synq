@@ -1,10 +1,12 @@
 import imgsim
 from django import forms
 from django.db.models import Max
+from django.core.files.base import File
 
 from .models import Image
 from Synq.settings import BASE_DIR
 import cv2
+import numpy as np
 
 
 def calculate_distance(path1: str, path2: str) -> float:
@@ -76,14 +78,13 @@ def fetch_new_group() -> int:
     return new_group
 
 
-def variance_of_laplacian(path: str) -> float:
+def variance_of_laplacian(image: np.ndarray) -> float:
     """
     compute the Laplacian of the image and then return the focus
     measure, which is simply the variance of the Laplacian
-    :param path: Path for the image
+    :param image: The image
     :return: sharpness
     """
-    image = cv2.imread(path)
     gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
     sharpness = cv2.Laplacian(gray, cv2.CV_64F).var()
     # 小数点以下3桁に丸めて返す
@@ -112,6 +113,21 @@ def select_best_shot(group_id: int) -> None:
     return None
 
 
+def binary_to_image(image_binary: File) -> np.ndarray:
+    """
+    メモリ上のバイナリデータの画像をOpenCVが処理可能な画像形式に変換する関数
+    :param image_binary:
+    :return: np.ndarray
+    """
+    # image = cv2.imread(binary.temporary_file_path())
+    # ファイルサイズに応じてファイルタイプはTemporaryUploadedFileかInMemoryUploadedFileになる
+    # TemporaryUploadedFileはディスク上に保存されるのでpathで参照可能だがInMemoryUploadedFileはメモリ上にしか存在しない
+    image_buffer = np.frombuffer(image_binary.read(), dtype=np.uint8)
+    image = cv2.imdecode(image_buffer, cv2.IMREAD_UNCHANGED)
+
+    return image
+
+
 class ImageForm(forms.ModelForm):
     class Meta:
         model = Image
@@ -124,18 +140,15 @@ class ImageForm(forms.ModelForm):
         # フォームからユーザーIDを取得し格納
         obj.user_id = obj.user.id
 
+        # アップロードされた画像のsharpnessを計算し格納
+        uploaded_img = binary_to_image(self.cleaned_data["image"])
+        obj.edge_sharpness = variance_of_laplacian(uploaded_img)
+
         # DBにデータが存在するか確認
         db_is_empty = not Image.objects.exists()
         if db_is_empty:  # データが存在しない場合のガード節
-            # DBに一旦保存
             # 画像がまだ登録されていないときはgroup=1
             obj.group = 1
-            obj.save()
-
-            # 投稿された画像のパスを取得
-            img_uploaded_path = str(BASE_DIR) + obj.image.url
-            # sharpnessを計算
-            obj.edge_sharpness = variance_of_laplacian(img_uploaded_path)
             obj.save()
 
             return obj
@@ -150,11 +163,6 @@ class ImageForm(forms.ModelForm):
         # DBに一旦保存
         obj.group = latest_user_group
         obj.save()
-
-        # 投稿された画像のパスを取得
-        img_uploaded_path = str(BASE_DIR) + obj.image.url
-        # sharpnessを計算
-        obj.edge_sharpness = variance_of_laplacian(img_uploaded_path)
 
         # 一つ前の画像データを取得
         img_latest_path = str(BASE_DIR) + latest_user_data.image.url
