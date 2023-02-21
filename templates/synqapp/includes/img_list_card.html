@@ -38,12 +38,12 @@
                 {# 開閉ボタンを設置 #}
                 <p class="card-button">
                     {% if isCollapse == "true-open" %}
-                        <button class="btn btn-warning" type="button" data-bs-toggle="collapse" data-bs-target="#img-{{ img.group }}" aria-expand="false" aria-controls="img-{{ img.group }}">
+                        <button class="btn btn-warning border border-white" type="button" data-bs-toggle="collapse" data-bs-target="#img-{{ img.group }}" aria-expand="false" aria-controls="img-{{ img.group }}">
                             {% load index %}        {# templatetags/index.pyの関数を読み込み #}
-                            +{{ group_count_list|index_minus1:img.group }}
+                            +{{ group_count_list|index_minus1_num_minus1:img.group }}
                         </button>
                     {% else %}
-                        <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#img-{{ img.group }}" aria-expand="false" aria-controls="img-{{ img.group }}">
+                        <button class="btn btn-secondary border border-white" type="button" data-bs-toggle="collapse" data-bs-target="#img-{{ img.group }}" aria-expand="false" aria-controls="img-{{ img.group }}">
                             -
                         </button>
                     {% endif %}

@@ -16,6 +16,11 @@ def index_minus1(indexable, i):
 
 
 @register.filter
+def index_minus1_num_minus1(indexable, i):
+    # i-1の数から1を引いた数を返す
+    return indexable[i-1]-1
+
+@register.filter
 def is_in_list(list_data, i):
     # iがlist_dataに含まれていれば、trueを返す
     return i in list_data
