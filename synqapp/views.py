@@ -96,6 +96,7 @@ class ImageList(LoginRequiredMixin, generic.ListView):
                 group_count_list.append(image_group_list.count(group_id+1))
 
             """contextにデータを追加"""
+            context["group_count_list"] = group_count_list
             context["first_image_of_the_day"] = first_image_of_the_day  # first image of the day
             context["pk_in_group"] = pk_in_group        # primary key in the group/そのグループ内での番号
             context["count"] = group_count_list         # number of images in the group/そのグループに属する写真の枚数
