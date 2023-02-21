@@ -41,7 +41,9 @@
     /*font-size: 15px;    !*背景色*!*/
     line-height: 1;     /*行高を1に*/
     padding: 5px 10px;  /*文字周りの余白*/
-    /*background: rgba(0, 0, 0, 0.5);*/
+    background: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 10px 25px 0 rgba(0, 0, 0, 0.4);
+    fill: white;
 }
 /*アルバムの日付を表示する部分の背景色 image_list.html*/
 .image-date{
