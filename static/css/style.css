@@ -15,7 +15,9 @@
 /*写真のカード表示で，写真のサムネイルのサイズを揃える*/
 .card-customize{
     object-fit: contain;
-    aspect-ratio: 3/2;
+    aspect-ratio: 1/1;
+    width: 100%;
+    height: auto;
 }
 /*グルーピングされた画像の開閉ボタン*/
 .card-button{
