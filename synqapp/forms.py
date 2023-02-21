@@ -123,7 +123,7 @@ def binary_to_image(image_binary: File) -> np.ndarray:
     # ファイルサイズに応じてファイルタイプはTemporaryUploadedFileかInMemoryUploadedFileになる
     # TemporaryUploadedFileはディスク上に保存されるのでpathで参照可能だがInMemoryUploadedFileはメモリ上にしか存在しない
     image_buffer = np.frombuffer(image_binary.read(), dtype=np.uint8)
-    image = cv2.imdecode(image_buffer, cv2.IMREAD_UNCHANGED)
+    image = cv2.imdecode(image_buffer, cv2.IMREAD_COLOR)
 
     return image
 
