@@ -57,6 +57,25 @@ class ImageList(LoginRequiredMixin, generic.ListView):
         pk = 1
 
         if self.object_list.exists():
+            print(self.object_list)
+            previous_image_date = 0     # initialize
+            grouping_by_date = []       # 日付で画像をグルーピング [[0, 1, 2], [3, 4]]
+            same_date_images = []       # 作成日が同じ画像を一時的に格納するリスト
+            for i, image in enumerate(self.object_list):
+                # i==0か前の画像と作成日が同じ場合
+                if i == 0 or image.created_at.date() == previous_image_date:
+                    same_date_images.append(i)
+                    previous_image_date = image.created_at.date()
+                    continue
+                # 前の画像と投稿日が異なる場合は、grouping_by_dateにsame_date_imagesを保存し、初期化
+                grouping_by_date.append(same_date_images)
+                same_date_images = [i]  # initialize same_date_images list
+                previous_image_date = image.created_at.date()
+            # 最後のsame_date_imagesをgrouping_by_dateに保存
+            grouping_by_date.append(same_date_images)
+            print(grouping_by_date)
+
+
             for i, image in enumerate(self.object_list):
                 group = image.group
                 image_group_list.append(group)      # 下でgroup_count_listを作成するときに使用
@@ -81,7 +100,7 @@ class ImageList(LoginRequiredMixin, generic.ListView):
 
             context["pk_in_group"] = pk_in_group        # primary key in the group/そのグループ内での番号
             context["count"] = group_count_list         # number of images in the group/そのグループに属する写真の枚数
-            # print(context)
+            print(context)
         return context
 
 
