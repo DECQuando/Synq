@@ -18,8 +18,11 @@ def calculate_distance(img1: np.ndarray, img2: np.ndarray) -> float:
     """
     # imgsimライブラリで画像をベクトル化
     vtr = imgsim.Vectorizer()
-    vec1 = vtr.vectorize(img1)
-    vec2 = vtr.vectorize(img2)
+    # ベクトル化の前にアルファ値(透過度)を除去
+    img1_without_alpha = img1[:, :, :3]
+    img2_without_alpha = img2[:, :, :3]
+    vec1 = vtr.vectorize(img1_without_alpha)
+    vec2 = vtr.vectorize(img2_without_alpha)
     # 2つのベクトル間の距離を算出
     dist = imgsim.distance(vec1, vec2)
     return dist
