@@ -21,3 +21,55 @@
         </div>
     </form>
 {% endblock %}
+
+{% block notifications %}
+<div class="container">
+    <button type="button" class="btn btn-primary" id="liveToastBtn">Show live toast</button>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <!-- <img src="..." class="rounded me-2" alt="..."> -->
+          <strong class="me-auto">Bootstrap</strong>
+          <small>11 mins ago</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          Hello, world! This is a toast message.
+        </div>
+      </div>
+    </div>
+</div>
+{#    {% if messages %}#}
+{#        <div class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">#}
+{#            <div class="d-flex">#}
+{#            <div class="toast-body">#}
+{#              Hello, world! This is a toast message.#}
+{#            </div>#}
+{#            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>#}
+{#            </div>#}
+{#        </div>#}
+{#        <ul class="messages">#}
+{#            {% for message in messages %}#}
+{#                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>#}
+{#                <p>{{ message }}</p>#}
+{#            {% endfor %}#}
+{#        </ul>#}
+{#    {% endif %}#}
+{% endblock %}
+
+
+{% block extra_script %}
+<script type="text/javascript">
+    const toastTrigger = document.getElementById('liveToastBtn')
+    const toastLiveExample = document.getElementById('liveToast')
+
+    {#if (toastTrigger) {#}
+    toastTrigger.addEventListener('click', () => {
+        console.log("on")
+        const toast = new bootstrap.Toast(toastLiveExample)
+        toast.show()
+    })
+    //}
+</script>
+{% endblock %}
