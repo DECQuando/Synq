@@ -27,6 +27,9 @@
                                 <p class="card-text">{{ image_context.name }}</p>
                                 <p>{{ image_context.created_at|date:"Y年n月j日 H:i:s" }}</p>
                             </div>
+                            <div class="text-center">
+                                <a href="{{request.META.HTTP_REFERER}}" class="btn btn-primary my-2">戻る</a>
+                            </div>
                         </div>
                     </div>
                 </div>
