@@ -165,7 +165,7 @@ class ImageForm(forms.ModelForm):
         dist = calculate_distance(img1=latest_img, img2=uploaded_img)
         group = return_group(
             previous_image_group=latest_user_group,
-            distance=dist, max_distance=10
+            distance=dist, max_distance=15
         )
         obj.group = group
         obj.save()
