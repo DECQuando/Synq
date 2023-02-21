@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views import View
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.messages.views import SuccessMessageMixin
 
 from .models import Image
 from .forms import ImageForm
@@ -16,7 +17,7 @@ class WelcomeView(LoginRequiredMixin, View):
 welcome_page = WelcomeView.as_view()
 
 
-class ImagePost(LoginRequiredMixin, generic.CreateView):
+class ImagePost(LoginRequiredMixin, SuccessMessageMixin, generic.CreateView):
     model = Image
     form_class = ImageForm
     template_name = "synqapp/image_form.html"
@@ -24,6 +25,8 @@ class ImagePost(LoginRequiredMixin, generic.CreateView):
     # reverse_lazyの引数はsynqapp/urls.pyに定義したurlのname属性。
     # そのnameをurlに変換するのがreverse_lazy。
     success_url = reverse_lazy('synqapp:image_post')
+    # 投稿完了メッセージを表示
+    success_message = "投稿が完了しました。"
 
     # バリデーションの際にユーザーの情報を付与
     def form_valid(self, form):
