@@ -55,9 +55,13 @@ class ImageList(LoginRequiredMixin, generic.ListView):
         previous_picture_group = 0
         # グループ内での画像の番号を格納する変数
         pk = 1
+        # 画像を日付ごとに表示するためのリスト
+        first_image_of_the_day = [0]  # 各日付の1枚目の画像のindexを格納
+        previous_image_date = 0       # initialize 前回の画像の日付を格納する変数
 
         if self.object_list.exists():
             for i, image in enumerate(self.object_list):
+                """画像のグルーピング処理"""
                 group = image.group
                 image_group_list.append(group)      # 下でgroup_count_listを作成するときに使用
                 if i == 0:
@@ -73,12 +77,26 @@ class ImageList(LoginRequiredMixin, generic.ListView):
                 pk_in_group.append(pk)
                 previous_picture_group = group
 
+                """"画像を日付ごとに表示するための処理"""
+                image_date = image.created_at.date()
+                if i == 0:
+                    first_image_of_the_day.append(0)
+                    previous_image_date = image_date
+                    continue
+                if not image_date == previous_image_date:
+                    first_image_of_the_day.append(i)
+                    previous_image_date = image_date
+            # print(first_image_of_the_day)
+
+            """それぞれのグループに属する画像の枚数を格納"""
             for group_id in range(max(image_group_list)):
                 # group_list.count(10)で、group_listの中で10の出現回数を算出
                 # e.g., a = [1, 1, 1, 2];    a.count(1) -> 3
                 # groupは1始まりなので、group_id+1
                 group_count_list.append(image_group_list.count(group_id+1))
 
+            """contextにデータを追加"""
+            context["first_image_of_the_day"] = first_image_of_the_day  # first image of the day
             context["pk_in_group"] = pk_in_group        # primary key in the group/そのグループ内での番号
             context["count"] = group_count_list         # number of images in the group/そのグループに属する写真の枚数
             # print(context)

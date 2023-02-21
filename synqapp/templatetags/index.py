@@ -13,3 +13,9 @@ def index(indexable, i):
 @register.filter
 def index_minus1(indexable, i):
     return indexable[i-1]
+
+
+@register.filter
+def is_in_list(list_data, i):
+    # iがlist_dataに含まれていれば、trueを返す
+    return i in list_data
