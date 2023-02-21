@@ -58,22 +58,31 @@ class ImageList(LoginRequiredMixin, generic.ListView):
 
         if self.object_list.exists():
             print(self.object_list)
-            previous_image_date = 0     # initialize
-            grouping_by_date = []       # 日付で画像をグルーピング [[0, 1, 2], [3, 4]]
-            same_date_images = []       # 作成日が同じ画像を一時的に格納するリスト
+            previous_image_date = 0             # initialize
+            first_image_of_the_day = [0]       # 日付で画像をグルーピング [0, 4, 6, 10]
             for i, image in enumerate(self.object_list):
-                # i==0か前の画像と作成日が同じ場合
-                if i == 0 or image.created_at.date() == previous_image_date:
-                    same_date_images.append(i)
-                    previous_image_date = image.created_at.date()
+                image_date = image.created_at.date()
+                if i == 0:
+                    previous_image_date = image_date
                     continue
-                # 前の画像と投稿日が異なる場合は、grouping_by_dateにsame_date_imagesを保存し、初期化
-                grouping_by_date.append(same_date_images)
-                same_date_images = [i]  # initialize same_date_images list
-                previous_image_date = image.created_at.date()
-            # 最後のsame_date_imagesをgrouping_by_dateに保存
-            grouping_by_date.append(same_date_images)
-            print(grouping_by_date)
+                if not image_date == previous_image_date:
+                    first_image_of_the_day.append(i)
+                    previous_image_date = image_date
+            print(first_image_of_the_day)
+
+
+            #     # i==0か前の画像と作成日が同じ場合
+            #     if i == 0 or image.created_at.date() == previous_image_date:
+            #         same_date_images.append(i)
+            #         previous_image_date = image.created_at.date()
+            #         continue
+            #     # 前の画像と投稿日が異なる場合は、grouping_by_dateにsame_date_imagesを保存し、初期化
+            #     grouping_by_date.append(same_date_images)
+            #     same_date_images = [i]  # initialize same_date_images list
+            #     previous_image_date = image.created_at.date()
+            # # 最後のsame_date_imagesをgrouping_by_dateに保存
+            # grouping_by_date.append(same_date_images)
+            # print(grouping_by_date)
 
 
             for i, image in enumerate(self.object_list):
@@ -98,6 +107,7 @@ class ImageList(LoginRequiredMixin, generic.ListView):
                 # groupは1始まりなので、group_id+1
                 group_count_list.append(image_group_list.count(group_id+1))
 
+            context["first_image_of_the_day"] = first_image_of_the_day  # first image of the day
             context["pk_in_group"] = pk_in_group        # primary key in the group/そのグループ内での番号
             context["count"] = group_count_list         # number of images in the group/そのグループに属する写真の枚数
             print(context)
