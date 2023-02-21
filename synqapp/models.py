@@ -30,7 +30,7 @@ class Image(models.Model):
                               validators=[FileExtensionValidator(["jpg", "png"])],
                               )
     thumbnail = ImageSpecField(source='image',
-                               processors=[ResizeToFill(300, 200)],
+                               processors=[ResizeToFill(200, 200)],
                                format="JPEG",
                                options={'quality': 85}
                                # qualityはGoogleの方針に従った
