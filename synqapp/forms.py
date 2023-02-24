@@ -74,7 +74,6 @@ def fetch_new_group() -> int:
     # 最新のグループを取得
     latest_group = latest_group_data.group
     new_group = latest_group + 1
-
     return new_group
 
 
