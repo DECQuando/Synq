@@ -11,6 +11,4 @@ urlpatterns = [
     path("synqapp/detail/<int:pk>/", views.ImageDetail.as_view(), name='image_detail'),
     # グルーピングなしのアルバム表示
     path('synqapp/list-no-grouping/', views.ImageListNoGrouping.as_view(), name='image_list_no_grouping'),
-    # 類似度を再計算
-    path('synqapp/recalculate-similarity/', views.recalculate_similarity, name='recalculate_similarity'),
 ]

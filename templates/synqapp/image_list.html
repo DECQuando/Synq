@@ -14,9 +14,6 @@
                 <a href="{% url 'synqapp:image_list_no_grouping' %}">
                     <button type="button" class="btn btn-outline-primary">No Grouping</button>
                 </a>
-                <a href="{% url 'synqapp:recalculate_similarity' %}">
-                    <button type="button" class="btn btn-outline-primary">類似度再計算</button>
-                </a>
             </div>
             {% for img in image_context_list %}
             {% load index %}        {# templatetags/index.pyの関数を読み込み #}
