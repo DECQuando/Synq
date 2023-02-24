@@ -24,8 +24,8 @@
                                 {#                  <img src="/media/sample.jpg" alt="sample画像">#}
                             {% endif %}
                             <div class="card-body">
-                                <p class="card-text">{{ image_context.name }}</p>
-                                <p>{{ image_context.created_at|date:"Y年n月j日 H:i:s" }}</p>
+                                <p>投稿日時: {{ image_context.created_at|date:"Y年n月j日 H:i:s" }}</p>
+                                <p class="card-text">タイトル: {{ image_context.name }}</p>
                             </div>
                             <div class="text-center">
                                 <a href="{{request.META.HTTP_REFERER}}" class="btn btn-primary my-2">戻る</a>
