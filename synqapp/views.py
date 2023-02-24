@@ -26,7 +26,7 @@ class ImagePost(LoginRequiredMixin, SuccessMessageMixin, generic.CreateView):
     # そのnameをurlに変換するのがreverse_lazy。
     success_url = reverse_lazy('synqapp:image_post')
     # 投稿完了メッセージを表示
-    success_message = "投稿が完了しました。"
+    success_message = "画像の投稿が完了しました。"
 
     # バリデーションの際にユーザーの情報を付与
     def form_valid(self, form):
