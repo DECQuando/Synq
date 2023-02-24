@@ -128,6 +128,11 @@ def binary_to_image(image_binary: File) -> np.ndarray:
 
 
 class ImageForm(forms.ModelForm):
+    # 画像投稿のinputタグに複数画像の投稿を許可（inputタグにmultipleを追加）
+    image = forms.ImageField(
+        widget=forms.ClearableFileInput(attrs={'multiple': True}),
+    )
+
     class Meta:
         model = Image
         # ユーザーに入力を許可するフィールドをfieldsで指定する
