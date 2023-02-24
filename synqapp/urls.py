@@ -9,4 +9,6 @@ urlpatterns = [
     path("synqapp/post/", views.ImagePost.as_view(), name="image_post"),
     path("synqapp/list/", views.ImageList.as_view(), name="image_list"),
     path("synqapp/detail/<int:pk>/", views.ImageDetail.as_view(), name='image_detail'),
+    # グルーピングなしのアルバム表示
+    path('synqapp/list-no-grouping/', views.ImageListNoGrouping.as_view(), name='image_list_no_grouping'),
 ]

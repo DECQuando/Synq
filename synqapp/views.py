@@ -104,6 +104,64 @@ class ImageList(LoginRequiredMixin, generic.ListView):
         return context
 
 
+class ImageListNoGrouping(LoginRequiredMixin, generic.ListView):
+    """グルーピングなしのアルバム表示"""
+    template_name = "synqapp/image_list_no_group.html"
+    context_object_name = "image_context_list"
+
+    # アクセスしたユーザーIDで画像をフィルタ
+    def get_queryset(self):
+        user_id = self.request.user.id
+        return Image.objects.filter(user_id=user_id).order_by("-created_at")
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(ImageListNoGrouping, self).get_context_data(**kwargs)
+        # 画像のグループ番号を格納するリスト
+        image_group_list = []   # [12, 11, 10, 10, 9, ..., 1, 1]
+        # グループ内での画像の番号を格納するリスト
+        pk_in_group = []        # [1,  1,  1,  2,  1, ..., 1, 2]
+        # 1つ前の画像のグループを格納する変数
+        previous_picture_group = 0
+        # グループ内での画像の番号を格納する変数
+        pk = 1
+        # 画像を日付ごとに表示するためのリスト
+        first_image_of_the_day = [0]  # 各日付の1枚目の画像のindexを格納
+        previous_image_date = 0       # initialize 前回の画像の日付を格納する変数
+
+        if self.object_list.exists():
+            for i, image in enumerate(self.object_list):
+                """画像のグルーピング処理"""
+                group = image.group
+                image_group_list.append(group)      # 下でgroup_count_listを作成するときに使用
+                if i == 0:
+                    # １つ目の画像はpk=1
+                    pk = 1
+                else:
+                    # 2つ目以降の画像は、下の条件分岐
+                    # 前の画像とグループが等しければpk+=1
+                    if previous_picture_group == group:
+                        pk += 1
+                    else:
+                        pk = 1
+                pk_in_group.append(pk)
+                previous_picture_group = group
+
+                """"画像を日付ごとに表示するための処理"""
+                image_date = image.created_at.date()
+                if i == 0:
+                    first_image_of_the_day.append(0)
+                    previous_image_date = image_date
+                    continue
+                if not image_date == previous_image_date:
+                    first_image_of_the_day.append(i)
+                    previous_image_date = image_date
+            # print(first_image_of_the_day)
+
+            """contextにデータを追加"""
+            context["first_image_of_the_day"] = first_image_of_the_day  # first image of the day
+        return context
+
+
 class ImageDetail(LoginRequiredMixin, UserPassesTestMixin, generic.DetailView):
     model = Image
     template_name = "synqapp/image_detail.html"
