@@ -7,6 +7,14 @@
 {% block contents %}
     <div class="album py-5 bg-body-tertiary">
         <div class="container">
+            <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+                <a href="{% url 'synqapp:image_list' %}">
+                    <button type="button" class="btn btn-primary">Grouping</button>
+                </a>
+                <a href="{% url 'synqapp:image_list_no_grouping' %}">
+                    <button type="button" class="btn btn-outline-primary">No Grouping</button>
+                </a>
+            </div>
             {% for img in image_context_list %}
             {% load index %}        {# templatetags/index.pyの関数を読み込み #}
             {# 画像の投稿日でセクションを分ける #}
