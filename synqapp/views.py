@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -15,6 +15,16 @@ class WelcomeView(LoginRequiredMixin, View):
 
 
 welcome_page = WelcomeView.as_view()
+
+
+def recalculate_similarity(request):
+    """類似度を再計算"""
+    user_id = request.user.id
+    data = Image.objects.filter(user_id=user_id).order_by("-created_at")
+    # for
+
+    success_url = reverse_lazy('synqapp:image_list')
+    return redirect(to=success_url)
 
 
 class ImagePost(LoginRequiredMixin, SuccessMessageMixin, generic.CreateView):

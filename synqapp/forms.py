@@ -28,6 +28,30 @@ def calculate_distance(img1: np.ndarray, img2: np.ndarray) -> float:
     return dist
 
 
+def return_group_for_recalculate_similarity(previous_image_group: int, distance: float,
+                                            max_distance: int, next_group: int) -> int:
+    """
+    グループの番号を返す関数（recalculate_similarityで使用する）
+    次のグループ番号を引数として与える。
+    :param next_group: 次のグループ番号
+    :param previous_image_group: Group of the previous image
+    :param distance: Vector distance between two images
+    :param max_distance: Maximum distance to be considered as the same group
+    :return: Group number of the uploaded image
+    """
+    if distance <= max_distance:
+        print("same: ", previous_image_group)
+        print("dist: ", distance)
+        return previous_image_group
+    else:
+        # return_group関数とはここが異なる
+        new_image_group = next_group
+        print("next: ", new_image_group)
+        print("dist: ", distance)
+        return new_image_group
+
+
+
 def return_group(previous_image_group: int, distance: float, max_distance: int) -> int:
     """
     グループの番号を返す関数
@@ -74,7 +98,6 @@ def fetch_new_group() -> int:
     # 最新のグループを取得
     latest_group = latest_group_data.group
     new_group = latest_group + 1
-
     return new_group
 
 
