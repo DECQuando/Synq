@@ -175,7 +175,15 @@ class ImageForm(forms.ModelForm):
             distance=dist, max_distance=15
         )
         obj.group = group
-        obj.save()
+
+        # saveでは複数投稿時にupdateとして振る舞うのでcreateでインサート
+        Image.objects.create(
+            name=obj.name,
+            group=obj.group,
+            image=obj.image,
+            edge_sharpness=obj.edge_sharpness,
+            user_id=obj.user_id
+        )
 
         # 新規グループの画像でない場合ベストショットを選出
         if is_same_group(group, latest_user_group):
