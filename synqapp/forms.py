@@ -140,53 +140,58 @@ class ImageForm(forms.ModelForm):
 
     def save(self, *args, **kwargs):
         obj = super(ImageForm, self).save(commit=False)
+        image_list = obj.image_list
 
-        # フォームからユーザーIDを取得し格納
-        obj.user_id = obj.user.id
+        for image in image_list:
+            # フォームからユーザーIDを取得し格納
+            obj.user_id = obj.user.id
 
-        # アップロードされた画像のsharpnessを計算し格納
-        uploaded_img = binary_to_image(self.cleaned_data["image"])
-        obj.edge_sharpness = variance_of_laplacian(uploaded_img)
+            # 画像リストから取り出した一枚の画像のデータを格納
+            obj.image = image
 
-        # DBにデータが存在するか確認
-        db_is_empty = not Image.objects.exists()
-        if db_is_empty:  # データが存在しない場合のガード節
-            # 画像がまだ登録されていないときはgroup=1
-            obj.group = 1
-            obj.save()
+            # アップロードされた画像のsharpnessを計算し格納
+            uploaded_img = binary_to_image(image)
+            obj.edge_sharpness = variance_of_laplacian(uploaded_img)
 
-            return obj
+            # DBにデータが存在するか確認
+            db_is_empty = not Image.objects.exists()
+            if db_is_empty:  # データが存在しない場合のガード節
+                # 画像がまだ登録されていないときはgroup=1
+                obj.group = 1
+                obj.save()
 
-        # 以降はDBに既にデータが存在する場合(exists()==True)の処理
+                continue
 
-        # ユーザーの一つ前の投稿データを取得
-        latest_user_data = Image.objects.filter(user_id=obj.user.id).latest('created_at')
-        # ユーザーの一つ前の投稿のグループを取得
-        latest_user_group = latest_user_data.group
+            # 以降はDBに既にデータが存在する場合(exists()==True)の処理
 
-        # ユーザーの一つ前の画像データを取得
-        latest_img_path = str(BASE_DIR) + latest_user_data.image.url
-        latest_img = cv2.imread(latest_img_path)
+            # ユーザーの一つ前の投稿データを取得
+            latest_user_data = Image.objects.filter(user_id=obj.user.id).latest('created_at')
+            # ユーザーの一つ前の投稿のグループを取得
+            latest_user_group = latest_user_data.group
 
-        # グルーピング判定を行い保存
-        dist = calculate_distance(img1=latest_img, img2=uploaded_img)
-        group = return_group(
-            previous_image_group=latest_user_group,
-            distance=dist, max_distance=15
-        )
-        obj.group = group
+            # ユーザーの一つ前の画像データを取得
+            latest_img_path = str(BASE_DIR) + latest_user_data.image.url
+            latest_img = cv2.imread(latest_img_path)
 
-        # saveでは複数投稿時にupdateとして振る舞うのでcreateでインサート
-        Image.objects.create(
-            name=obj.name,
-            group=obj.group,
-            image=obj.image,
-            edge_sharpness=obj.edge_sharpness,
-            user_id=obj.user_id
-        )
+            # グルーピング判定を行い保存
+            dist = calculate_distance(img1=latest_img, img2=uploaded_img)
+            group = return_group(
+                previous_image_group=latest_user_group,
+                distance=dist, max_distance=15
+            )
+            obj.group = group
 
-        # 新規グループの画像でない場合ベストショットを選出
-        if is_same_group(group, latest_user_group):
-            select_best_shot(group)
+            # saveでは複数投稿時にupdateとして振る舞うのでcreateでインサート
+            Image.objects.create(
+                name=obj.name,
+                group=obj.group,
+                image=obj.image,
+                edge_sharpness=obj.edge_sharpness,
+                user_id=obj.user_id
+            )
+
+            # 新規グループの画像でない場合ベストショットを選出
+            if is_same_group(group, latest_user_group):
+                select_best_shot(group)
 
         return obj
