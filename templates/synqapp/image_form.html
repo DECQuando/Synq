@@ -16,7 +16,12 @@
 
         <div class="d-flex align-items-center justify-content-center">
             {% block button %}
-                <button type="submit" class="btn btn-primary btn-lg center-block">送信</button>
+                <div class="d-grid gap-2 d-md-block">
+                    <button type="submit" class="btn btn-primary" type="button">送信</button>
+                    <a href="{% url 'synqapp:image_list_no_grouping' %}">
+                        <button class="btn btn-outline-primary" type="button">アルバム表示</button>
+                    </a>
+                </div>
             {% endblock %}
         </div>
     </form>
