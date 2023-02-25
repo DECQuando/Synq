@@ -33,6 +33,18 @@ class ImagePost(LoginRequiredMixin, SuccessMessageMixin, generic.CreateView):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
+    def post(self, request, *args, **kwargs):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+
+        if form.is_valid():
+            # POSTされた複数の画像をリスト化してフォームインスタンスに付与
+            image_list = request.FILES.getlist('image')
+            form.instance.image_list = image_list
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
 
 class ImageList(LoginRequiredMixin, generic.ListView):
     template_name = "synqapp/image_list.html"
