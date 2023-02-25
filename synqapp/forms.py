@@ -136,7 +136,7 @@ class ImageForm(forms.ModelForm):
     class Meta:
         model = Image
         # ユーザーに入力を許可するフィールドをfieldsで指定する
-        fields = ("name", "image")
+        fields = ("image",)
 
     def save(self, *args, **kwargs):
         obj = super(ImageForm, self).save(commit=False)
@@ -148,6 +148,7 @@ class ImageForm(forms.ModelForm):
 
             # 画像リストから取り出した一枚の画像のデータを格納
             obj.image = image
+            obj.name = image.name
 
             # アップロードされた画像のsharpnessを計算し格納
             uploaded_img = binary_to_image(image)
