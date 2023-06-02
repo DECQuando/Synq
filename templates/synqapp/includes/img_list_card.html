@@ -1,0 +1,51 @@
+{#image_list.htmlから渡されたisCollapseによって、条件分岐#}
+{% if isCollapse == "false" or isCollapse == "true-open"  or isCollapse == "false-no-grouping" %}
+    <div class="col">
+{% else %}
+    <div class="col collapse" id="img-{{ img.group }}">
+{% endif %}
+
+{#    h-100でカードの高さを揃える#}
+    <div class="card-group h-100">
+        <div class="card shadow-sm">
+            {% if img.image %}
+                <a class="card-text" href="{% url 'synqapp:image_detail' img.pk %}">
+                    <img src="{{ img.thumbnail.url }}" class="card-customize" alt="{{ img.name }}の写真" loading="lazy">
+                    {# 該当の画像がベストショットで、アルバム表示がグルーピングありのとき #}
+                    {% if img.is_best_shot and isCollapse != "false-no-grouping" %}
+                        <p class="card-best-shot">
+                        {# シンプルブックマーク #}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" class="bi bi-bookmark-star-fill" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5zM8.16 4.1a.178.178 0 0 0-.32 0l-.634 1.285a.178.178 0 0 1-.134.098l-1.42.206a.178.178 0 0 0-.098.303L6.58 6.993c.042.041.061.1.051.158L6.39 8.565a.178.178 0 0 0 .258.187l1.27-.668a.178.178 0 0 1 .165 0l1.27.668a.178.178 0 0 0 .257-.187L9.368 7.15a.178.178 0 0 1 .05-.158l1.028-1.001a.178.178 0 0 0-.098-.303l-1.42-.206a.178.178 0 0 1-.134-.098L8.16 4.1z"/>
+                        </svg>
+                        </p>
+                    {% endif %}
+                </a>
+            {% else %}
+                <svg class="bd-placeholder-img card-img-top" width="100%" height="225"
+                     xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"
+                     focusable="false" role="img" aria-label="Placeholder: Image cap">
+                    <title>Placeholder</title>
+                    <rect fill="#868e96" width="100%" height="100%"/>
+                    <text fill="#dee2e6" dy=".3em" x="40%" y="50%">Thumbnail</text>
+                </svg>
+            {% endif %}
+            <p class="card-info">{{ img.name }}</p>
+            {% if isCollapse == "true-open" or isCollapse == "true-close" %}
+                {# 開閉ボタンを設置 #}
+                <p class="card-button">
+                    {% if isCollapse == "true-open" %}
+                        <button class="btn btn-warning border border-white" type="button" data-bs-toggle="collapse" data-bs-target="#img-{{ img.group }}" aria-expand="false" aria-controls="img-{{ img.group }}">
+                            {% load index %}        {# templatetags/index.pyの関数を読み込み #}
+                            +{{ group_count_list|index_minus1_num_minus1:img.group }}
+                        </button>
+                    {% else %}
+                        <button class="btn btn-secondary border border-white" type="button" data-bs-toggle="collapse" data-bs-target="#img-{{ img.group }}" aria-expand="false" aria-controls="img-{{ img.group }}">
+                            -
+                        </button>
+                    {% endif %}
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>

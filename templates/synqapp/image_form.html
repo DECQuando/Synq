@@ -1,0 +1,67 @@
+{% extends "form_centered.html" %}
+
+{% block theme %}
+    投稿画面
+{% endblock %}
+
+{% block form %}
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <table class="table">{{ form.as_table }}</table>
+
+        {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+        {% endif %}
+
+        <div class="d-flex align-items-center justify-content-center">
+            {% block button %}
+                <div class="d-grid gap-2 d-md-block">
+                    <button type="submit" class="btn btn-primary" type="button">送信</button>
+                    <a href="{% url 'synqapp:image_list_no_grouping' %}">
+                        <button class="btn btn-outline-primary" type="button">アルバム表示</button>
+                    </a>
+                </div>
+            {% endblock %}
+        </div>
+    </form>
+{% endblock %}
+
+{% block notifications %}
+{#    投稿完了メッセージを表示 #}
+<div class="container">
+    {% if messages %}
+{#        画面右上に表示#}
+{#        <div class="toast-container position-fixed top-0 end-0 p-3">#}
+        <div class="toast-container">
+{#            data-bs-autohideにより5秒後に消える#}
+            <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true">
+                <div class="toast-header">
+                    <!-- <img src="..." class="rounded me-2" alt="..."> -->
+                    <strong class="me-auto">SynQ Album</strong>
+                    <small>Now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                {# messagesはImagePostのsuccess_messageで定義 #}
+                {% for message in messages %}
+                    <div class="toast-body">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+
+
+{% block extra_script %}
+<script type="text/javascript">
+{# 投稿完了メッセージがあれば以下を実行 #}
+    {% if messages %}
+        const toastLiveExample = document.getElementById('liveToast')
+        const toast = new bootstrap.Toast(toastLiveExample)
+        toast.show()
+    {% endif %}
+</script>
+{% endblock %}

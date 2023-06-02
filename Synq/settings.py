@@ -29,7 +29,8 @@ except ImportError:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Docker導入時に設定。指定なし[]だとアクセスできない。
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1']
 
 
 # Application definition
@@ -41,8 +42,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "imagekit",
+
+    "accounts.apps.AccountsConfig",
     "synqapp.apps.SynqappConfig",
-    "bootstrap5",
 ]
 
 MIDDLEWARE = [
@@ -87,6 +90,8 @@ DATABASES = {
     }
 }
 
+# 認証に利用するための宣言
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -100,6 +105,11 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
 
+# login logoutのurl
+LOGIN_URL = 'accounts:login'
+LOGOUT_URL = 'auth:logout'
+LOGIN_REDIRECT_URL = 'synqapp:welcome'
+LOGOUT_REDIRECT_URL = 'accounts:login'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
@@ -118,11 +128,38 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # media files
-MEDIA_URL = "media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
+if DEBUG:
+    MEDIA_ROOT = BASE_DIR / "media"
+else:
+    # deploy後の本番環境ではこちら
+    MEDIA_ROOT = f'/var/www/{BASE_DIR.name}/media'
+
+#################
+# debug toolbar #
+#################
+
+if DEBUG:
+    def show_toolbar(request):
+        return True
+
+
+    INSTALLED_APPS += (
+        'debug_toolbar',
+    )
+    MIDDLEWARE += (
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    )
+    DEBUG_TOOLBAR_CONFIG = {
+        'SHOW_TOOLBAR_CALLBACK': show_toolbar,
+    }
